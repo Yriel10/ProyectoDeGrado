@@ -1,34 +1,33 @@
-import React from 'react'
+import React from "react";
 import Carrusel from "../Componetes/Carrusel";
 import Cards from "../Componetes/Cards";
 import Footers from "../Componetes/Footers";
 import ResponsiveAppBar from "../Componetes/Menu";
 import Menu from "../Componetes/Menu2";
-import Mapa from '../Componetes/mapa';
+import Mapa from "../Componetes/mapa";
+import Nosotros from "../Componetes/Nosotros";
 
 export default function Inicio() {
   return (
     <>
-    <div>
-    <Menu/>
-   </div>
-   <div>
-   <div className="carrusel">
-     <Carrusel></Carrusel>
-     <div className="cards" id='ofertas'>
-       <Cards />
-     </div>
-     <div>
-     </div>
-     <div id='ubicacion'>
-        <Mapa/>
-     </div>
-   </div>
-   <div id='#acerca de'>
-   <Footers></Footers>
-   </div>
-     </div>
-     </>
-    
-  )
+      <div>
+        <Menu />
+      </div>
+      <div className="carrusel">
+        <Carrusel></Carrusel>
+      </div>
+      <div className="cards" id="ofertas">
+        <Cards />
+      </div>
+      <div id="ubicacion">
+        <Mapa />
+      </div>
+      <div id="nosotros">
+        <Nosotros />
+      </div>
+      <div >
+        <Footers></Footers>
+      </div>
+    </>
+  );
 }

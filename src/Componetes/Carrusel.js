@@ -8,7 +8,7 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/maestria-en-emergencia.jpg"
+            src="../../imagenes/carrusel1.jpg"
             alt="First slide"
              height={600}
           />
@@ -19,7 +19,7 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/en-generico-medicamentos-con-valor-anadido.jpg"
+            src="../../imagenes/carrusel3.jpg"
             alt="Second slide"
             height={600}
           />
@@ -31,7 +31,7 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/140311885_632088054188072_3586911874959006694_n.jpg"
+            src="../../imagenes/carruse1.jpg"
             alt="Third slide"
             height={600}
           />

@@ -10,7 +10,8 @@ import { mdiCartOutline } from "@mdi/js";
 import "../Assest/menu.css";
 
 
-function Menu() {
+function Menu(props) {
+
   return (
     <div>
       <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
@@ -36,14 +37,13 @@ function Menu() {
                 Tienda
               </Nav.Link>
 
-              <NavDropdown title="Nosotros" id="navbarScrollingDropdown">
+              <NavDropdown title="Acerca de" id="navbarScrollingDropdown">
                 <NavDropdown.Item href="/#ofertas">Ofertas</NavDropdown.Item>
                 <NavDropdown.Item href="/#ubicacion">
                   Ubicacion
                 </NavDropdown.Item>
-                <NavDropdown.Item href="/#acerca de">Acerca de</NavDropdown.Item>
+                <NavDropdown.Item href="/#nosotros">Nosotros</NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link href="#">Noticias</Nav.Link>
             </Nav>
             <div>
               <Icon path={mdiCartOutline} className="icon" />

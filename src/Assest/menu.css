@@ -1,7 +1,7 @@
 
 .icon{
     
-    color: rgb(255, 255, 255);
+    color: black(255, 255, 255);
     flex-direction: row-reverse;
    width: 30px;
    bottom: 1rem;
@@ -28,16 +28,17 @@
     color: white;
 }
 nav.navbar{
-background: #118b6d;
-border: 1px solid #020f0c37;
+background:linear-gradient(to top, #ffffff, #e9edf8, #caddf0, #a4cfe3, #7cc2d0, #6bbcc5, #5ab6b8, #4cafaa, #4cafaa, #4cafaa, #4cafaa, #4cafaa);;
+
+
 
 
 }
 .navbar-brand{
-color: white;
+color: black;
 }
 .navbar-light .navbar-nav .nav-link {
-    color: white;
+    color: black;
     }
 .fotoPerfil{
     border-radius: 50%;

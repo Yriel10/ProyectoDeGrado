@@ -13,7 +13,8 @@ import Button from 'react-bootstrap/Button';
 
 
 
-function Login() {
+
+function Login(props) {
   const baseUrl="https://localhost:7151/api/usuario";
   const cookies = new Cookies();
 
@@ -36,7 +37,14 @@ function Login() {
       }).then(response=>{
         if(response.length>0){
           var respuesta=response[0];
-          console.log(respuesta);
+         cookies.set('id',respuesta.id,{path:'/'});
+         cookies.set('nombres',respuesta.nombres,{path:'/'});
+         cookies.set('apellidos',respuesta.apellidos,{path:'/'});
+         cookies.set('correo',respuesta.correo,{path:'/'});
+         cookies.set('contrasena',respuesta.contrasena,{path:'/'});
+         cookies.set('rol',respuesta.rol,{path:'/'});
+         alert('Bienvenido:'+respuesta.nombres+" "+respuesta.apellidos);
+         props.history.push('/')
         }else{
           alert('El usuario o la contraseña son incorrectos')
         }
@@ -66,6 +74,7 @@ function Login() {
     <>
     <div>
       < Menu/>
+   
     </div>
     <div>
     <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
@@ -82,12 +91,13 @@ function Login() {
       variant="primary"
       disabled={isLoading}
       onClick={()=>iniciarSesion()}
+      href='/'
     >
       {isLoading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
     </Button>
     
       <div className="text-center">
-        <p>Not a member? <a href="#!">Register</a></p>
+        <p>Not a member? <a href="/registro">Register</a></p>
 
       </div>
 
