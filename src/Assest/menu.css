@@ -1,0 +1,49 @@
+
+.icon{
+    
+    color: rgb(255, 255, 255);
+    flex-direction: row-reverse;
+   width: 30px;
+   bottom: 1rem;
+    left: -2rem;
+}
+.icon:hover{
+    border: 1px solid rgba(255, 0, 0, 0.196);
+}
+.button{
+    background-color: black;
+}
+.shadow{
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2)!important;
+}
+.item-total{
+    position: relative;
+    top: -1rem;
+    right: 0.5rem;
+    width: -2.5rem;
+    border: 1px solid red;
+    border-radius: 50%;
+    justify-content: center;
+    background-color: red;
+    color: white;
+}
+nav.navbar{
+background: #118b6d;
+border: 1px solid #020f0c37;
+
+
+}
+.navbar-brand{
+color: white;
+}
+.navbar-light .navbar-nav .nav-link {
+    color: white;
+    }
+.fotoPerfil{
+    border-radius: 50%;
+    width: 60px;
+  
+}
+.img{
+    border-radius: 50%;
+}
