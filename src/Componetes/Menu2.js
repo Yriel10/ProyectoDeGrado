@@ -8,12 +8,28 @@ import Image from "react-bootstrap/Image";
 import Icon from "@mdi/react";
 import { mdiCartOutline } from "@mdi/js";
 import "../Assest/menu.css";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 
 function Menu(props) {
+  const cookies= new Cookies();
+  let navigate= useNavigate()
+  const estado= cookies.get('id');
+console.log(estado)
+  const cerrarSesion=()=>{
+    cookies.remove('id',{path:'/'});
+    cookies.remove('nombres',{path:'/'});
+    cookies.remove('apellidos',{path:'/'});
+    cookies.remove('correo',{path:'/'});
+    cookies.remove('rol',{path:'/'});
+    navigate('/')
+
+  }
+
 
   return (
-    <div>
+    <div >
       <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
         <Container fluid>
           <Image
@@ -70,8 +86,9 @@ function Menu(props) {
               }
               id="basic-nav-dropdown" 
             >
-              <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-              <NavDropdown.Item href="/login">Login</NavDropdown.Item>
+              <NavDropdown.Item href="/profile">Perfil</NavDropdown.Item>
+              {(estado=== undefined) ?<NavDropdown.Item href="/login">Login</NavDropdown.Item>:<NavDropdown.Item href="/" onClick={()=>cerrarSesion()}>Logout</NavDropdown.Item>}
+          
             </NavDropdown>
           </Navbar.Collapse>
         </Container>

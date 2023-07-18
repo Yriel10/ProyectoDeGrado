@@ -1,5 +1,7 @@
 import Carousel from "react-bootstrap/Carousel";
-
+import POR1 from '../Assest/imagenes/Por1.png';
+import POR2 from '../Assest/imagenes/por2.png';
+import POR3 from '../Assest/imagenes/por3.png';
 
 function Carrusel() {
   return (
@@ -8,9 +10,9 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/carrusel1.jpg"
+            src={POR1}
             alt="First slide"
-             height={600}
+   
           />
           <Carousel.Caption>
 
@@ -19,9 +21,9 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/carrusel3.jpg"
+            src={POR2}
             alt="Second slide"
-            height={600}
+
           />
 
           <Carousel.Caption>
@@ -31,9 +33,8 @@ function Carrusel() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="../../imagenes/carruse1.jpg"
+            src={POR3}
             alt="Third slide"
-            height={600}
           />
 
           <Carousel.Caption>

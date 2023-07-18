@@ -10,14 +10,17 @@ import {
 }
 from 'mdb-react-ui-kit';
 import Footers from '../Componetes/Footers';
+import '../Assest/registro.css'
 
 export default function FormularioRegistro() {
   return (
+    <>
     <div>
         <Menu/>
-        <MDBContainer fluid className='d-flex align-items-center justify-content-center bg-image' style={{backgroundImage:''}}>
-      <div className='mask gradient-custom-3'></div>
-      <MDBCard className='m-5' style={{maxWidth: '600px', background:'linear-gradient(0deg, rgba(7,212,255,1) 0%, rgba(24,234,118,1) 100%)'}}>
+       
+        <MDBContainer fluid className='d-flex align-items-center justify-content-center bg-image' style={{background:''}}>
+        <div className='registro'>
+      <MDBCard className='m-5' style={{maxWidth: '600px'}}>
         <MDBCardBody className='px-5'>
           <h2 className="text-uppercase text-center mb-5">Crear cuenta</h2>
           <MDBInput wrapperClass='mb-4' label='Nombre' size='lg' id='form1' type='text'/>
@@ -28,8 +31,12 @@ export default function FormularioRegistro() {
           <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg'>Registrarse</MDBBtn>
         </MDBCardBody>
       </MDBCard>
+      </div>
     </MDBContainer>
+  
         <Footers/>
+        
     </div>
+    </>
   )
 }

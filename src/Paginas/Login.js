@@ -10,6 +10,8 @@ import Cookies from 'universal-cookie';
 import axios from 'axios';
 import md5 from 'md5';
 import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
+
 
 
 
@@ -17,7 +19,7 @@ import Button from 'react-bootstrap/Button';
 function Login(props) {
   const baseUrl="https://localhost:7151/api/usuario";
   const cookies = new Cookies();
-
+  let navigate= useNavigate()
   const [form, setForm]=useState({
     correo:'',
     contrasena:''
@@ -44,7 +46,7 @@ function Login(props) {
          cookies.set('contrasena',respuesta.contrasena,{path:'/'});
          cookies.set('rol',respuesta.rol,{path:'/'});
          alert('Bienvenido:'+respuesta.nombres+" "+respuesta.apellidos);
-         props.history.push('/')
+         navigate('/')
         }else{
           alert('El usuario o la contraseña son incorrectos')
         }
@@ -79,25 +81,25 @@ function Login(props) {
     <div>
     <MDBContainer className="p-3 my-5 d-flex flex-column w-50">
 
-      <MDBInput wrapperClass='mb-4' label='Email address' id='form1' type='email' name='correo' onChange={handleChange}/>
-      <MDBInput wrapperClass='mb-4' label='Password' id='form2' type='password' name='contrasena'onChange={handleChange}/>
+      <MDBInput wrapperClass='mb-4' label='Correo electronico' id='form1' type='email' name='correo' onChange={handleChange}/>
+      <MDBInput wrapperClass='mb-4' label='Contraseña' id='form2' type='password' name='contrasena'onChange={handleChange}/>
    
 
       <div className="d-flex justify-content-between mx-3 mb-4">
 
-        <a href="!#">Forgot password?</a>
+        <a href="!#">¿Olvidaste tu contraseña?</a>
       </div>
       <Button
       variant="primary"
       disabled={isLoading}
       onClick={()=>iniciarSesion()}
-      href='/'
+    
     >
       {isLoading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
     </Button>
     
       <div className="text-center">
-        <p>Not a member? <a href="/registro">Register</a></p>
+        <p>¿No estas registrado? <a href="/registro">Registrarse</a></p>
 
       </div>
 
@@ -107,4 +109,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default Login ;
