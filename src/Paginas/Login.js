@@ -11,6 +11,7 @@ import axios from 'axios';
 import md5 from 'md5';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
+import Footers from '../Componetes/Footers';
 
 
 
@@ -105,6 +106,8 @@ function Login(props) {
 
     </MDBContainer>
     </div>
+    
+    <Footers/>
     </>
   );
 }

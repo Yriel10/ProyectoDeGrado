@@ -2,7 +2,7 @@ import React from "react";
 import "../Assest/productos.css";
 import IMG from "../Assest/imagenes/amoxicilina.png";
 import Menu from "../Componetes/Menu2";
-
+import Footers from '../Componetes/Footers';
 export default function Tienda() {
   return (
     <>
@@ -89,6 +89,8 @@ export default function Tienda() {
           </div>
         </div>
       </div>
+      
+      <Footers/>
     </>
   );
 }

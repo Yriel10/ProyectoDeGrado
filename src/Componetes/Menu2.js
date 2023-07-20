@@ -14,9 +14,10 @@ import { useNavigate } from "react-router-dom";
 
 function Menu(props) {
   const cookies= new Cookies();
-  let navigate= useNavigate()
+  let navigate= useNavigate();
   const estado= cookies.get('id');
-console.log(estado)
+  const roles= cookies.get('rol');
+  const rol = roles === undefined ? 'usuario' : roles.toString();
   const cerrarSesion=()=>{
     cookies.remove('id',{path:'/'});
     cookies.remove('nombres',{path:'/'});
@@ -88,7 +89,7 @@ console.log(estado)
             >
               <NavDropdown.Item href="/profile">Perfil</NavDropdown.Item>
               {(estado=== undefined) ?<NavDropdown.Item href="/login">Login</NavDropdown.Item>:<NavDropdown.Item href="/" onClick={()=>cerrarSesion()}>Logout</NavDropdown.Item>}
-          
+              {(rol=== 'Administrador') ?(<NavDropdown.Item href="/dashboard">Dashboard</NavDropdown.Item>):<NavDropdown.Item href="/"></NavDropdown.Item>}
             </NavDropdown>
           </Navbar.Collapse>
         </Container>

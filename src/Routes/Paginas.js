@@ -4,6 +4,7 @@ import  Tienda  from '../Paginas/Tienda';
 import Inicio from '../Paginas/Inicio';
 import Login from '../Paginas/Login';
 import FormularioRegistro from '../Paginas/FormularioRegistro';
+import Dashboard from '../Paginas/Dashboard';
 
 
 
@@ -12,9 +13,10 @@ export const  Paginas = ( ) => {
     <BrowserRouter>
     <Routes>
    <Route path="/tienda" element={<Tienda/> }/>
-   <Route exact path="/" element={<Inicio/>}/>
+   <Route  path="/" element={<Inicio/>}/>
    <Route path='/login' element={<Login/>}/>
    <Route path='/registro' element={<FormularioRegistro/>}/>
+   <Route path='/dashboard' element={<Dashboard/>}/>
     </Routes>
     </BrowserRouter>
  
