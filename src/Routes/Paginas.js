@@ -5,6 +5,7 @@ import Inicio from '../Paginas/Inicio';
 import Login from '../Paginas/Login';
 import FormularioRegistro from '../Paginas/FormularioRegistro';
 import Dashboard from '../Paginas/Dashboard';
+import DashboardMultimedia from '../Paginas/DashboardMultimedia';
 
 
 
@@ -17,6 +18,7 @@ export const  Paginas = ( ) => {
    <Route path='/login' element={<Login/>}/>
    <Route path='/registro' element={<FormularioRegistro/>}/>
    <Route path='/dashboard' element={<Dashboard/>}/>
+   <Route path='/dashboardMultimedia' element={<DashboardMultimedia/>}/>
     </Routes>
     </BrowserRouter>
  

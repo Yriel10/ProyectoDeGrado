@@ -1,27 +1,26 @@
-import React from "react";
-import { Nav, NavItem, NavLink } from "react-bootstrap";
 
-const Sidebar = () => {
+import "../Assest/Sidebar.css";
+import { Link } from "react-router-dom";
+
+function MenuDasbohard() {
   return (
-    <Nav
-      variant="pills"
-      style={{
-        width: "200px",
-        backgroundColor: "#333",
-        color: "#fff",
-      }}
-    >
-      <NavItem>
-        <NavLink href="/">Home</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/about">About</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/contact">Contact</NavLink>
-      </NavItem>
-    </Nav>
-  );
-};
+   <>
+   <div className="sidebar">
+    <ul>
+      <li>
+        <Link to="">Usuarios</Link>
+      </li>
+      <li>
+        <Link to="">Multimedias</Link>
+      </li>
+      <li>
+        <Link to="">Medicamentos</Link>
+      </li>
+    </ul>
 
-export default Sidebar;
+   </div>
+   </>
+  );
+}
+
+export default MenuDasbohard;

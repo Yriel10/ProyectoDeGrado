@@ -1,18 +1,16 @@
 import React, { useState,useEffect } from 'react';
 import {
   MDBContainer,
-  MDBInput,
-  MDBBtn,
+  MDBInput
 }
 from 'mdb-react-ui-kit';
 import Menu from '../Componetes/Menu2';
 import Cookies from 'universal-cookie';
 import axios from 'axios';
-import md5 from 'md5';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import Footers from '../Componetes/Footers';
-
+import {Modal, ModalBody, ModalFooter,ModalHeader} from "react-bootstrap";
 
 
 
@@ -20,6 +18,8 @@ import Footers from '../Componetes/Footers';
 function Login(props) {
   const baseUrl="https://localhost:7151/api/usuario";
   const cookies = new Cookies();
+  const [data, setData]=useState([]);
+  const [modalInsertar, setModalInsertar]=useState(false);
   let navigate= useNavigate()
   const [form, setForm]=useState({
     correo:'',
@@ -31,30 +31,66 @@ function Login(props) {
       ...form,
       [name]:value
     });
+    setGestorSeleccionado({
+      ...gestorSeleccionado,
+      [name]: value
+  });
     console.log(form);
+    console.log(gestorSeleccionado);
   }
+  
+  const [gestorSeleccionado, setGestorSeleccionado]=useState({
+    idUsuario:'',
+    nombres:'',
+    apellidos:'',
+    correo:'',
+    contrasena:'',
+    rol: 'Usuario'
+
+})
+  const registrarsePost=async()=>{
+    try {
+      // Validar que los campos no estén vacíos antes de realizar la solicitud
+      if (
+        gestorSeleccionado.nombres.trim() === '' ||
+        gestorSeleccionado.apellidos.trim() === '' ||
+        gestorSeleccionado.correo.trim() === '' ||
+        gestorSeleccionado.contrasena.trim() === ''
+      ) {
+        alert('Por favor, complete todos los campos del formulario');
+        return;
+      }
+      delete gestorSeleccionado.idUsuario;
+      const response = await axios.post(baseUrl, gestorSeleccionado);
+      setData(data.concat(response.data));
+      abrirCerrarModalInsertar();
+    } catch (error) {
+      console.log(error);
+    }
+}
+const abrirCerrarModalInsertar=()=>{
+  setModalInsertar(!modalInsertar);
+}
+
   const iniciarSesion=async()=>{
-    await axios.get(baseUrl+`/${form.correo}/${(form.contrasena)}`)
-      .then(response =>{
-        return response.data;
-      }).then(response=>{
-        if(response.length>0){
-          var respuesta=response[0];
-         cookies.set('id',respuesta.id,{path:'/'});
-         cookies.set('nombres',respuesta.nombres,{path:'/'});
-         cookies.set('apellidos',respuesta.apellidos,{path:'/'});
-         cookies.set('correo',respuesta.correo,{path:'/'});
-         cookies.set('contrasena',respuesta.contrasena,{path:'/'});
-         cookies.set('rol',respuesta.rol,{path:'/'});
-         alert('Bienvenido:'+respuesta.nombres+" "+respuesta.apellidos);
-         navigate('/')
-        }else{
-          alert('El usuario o la contraseña son incorrectos')
-        }
-      })
-      .catch(error=>{
-        console.log(error);
-      })
+    try {
+      const response = await axios.get(baseUrl + `/${form.correo}/${form.contrasena}`);
+      const usuario = response.data[0];
+      if (usuario) {
+        cookies.set('id', usuario.id, { path: '/' });
+        cookies.set('nombres', usuario.nombres, { path: '/' });
+        cookies.set('apellidos', usuario.apellidos, { path: '/' });
+        cookies.set('correo', usuario.correo, { path: '/' });
+        cookies.set('contrasena', usuario.contrasena, { path: '/' });
+        cookies.set('rol', usuario.rol, { path: '/' });
+        alert('Bienvenido:' + usuario.nombres + ' ' + usuario.apellidos);
+        navigate('/');
+      } else {
+        alert('El usuario o la contraseña son incorrectos');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
   const [isLoading, setLoading] = useState(false);
 
@@ -70,7 +106,6 @@ function Login(props) {
     }
   }, [isLoading]);
 
-  const handleClick = () => setLoading(true);
 
   return (
     
@@ -100,7 +135,7 @@ function Login(props) {
     </Button>
     
       <div className="text-center">
-        <p>¿No estas registrado? <a href="/registro">Registrarse</a></p>
+        <p>¿No estas registrado? <button onClick={()=>abrirCerrarModalInsertar()}>Registrarse</button></p>
 
       </div>
 
@@ -108,6 +143,33 @@ function Login(props) {
     </div>
     
     <Footers/>
+    <Modal show={modalInsertar}>
+        <ModalHeader>Registrarse</ModalHeader>
+        <ModalBody>
+            <div className="form-group">
+                <label>Nombre</label>
+                <br/>
+                <input type="texto" className="form-control "name="nombres" onChange={handleChange}/>
+                <br/>
+                <label>Apellido</label>
+                <br/>
+                <input type="texto" className="form-control"name="apellidos" onChange={handleChange}/>
+                <br/>  
+                <label>Correo</label>
+                <br/>
+                 <input type="texto" className="form-control"name="correo" onChange={handleChange}/>
+                <br/> 
+                <label>Contraseña</label>
+                <br/>
+                  <input type="password" className="form-control"name="contrasena" onChange={handleChange}/>
+                <br/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+        <button className="btn btn-primary" onClick={()=>registrarsePost()}>Registrarse</button>{""}
+        <button className="btn btn-danger" onClick={()=>abrirCerrarModalInsertar()}>Cancelar</button>
+        </ModalFooter>
+    </Modal>
     </>
   );
 }

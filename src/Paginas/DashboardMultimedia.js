@@ -3,22 +3,36 @@ import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import {Modal, ModalBody, ModalFooter,ModalHeader} from "react-bootstrap";
 import Footers from '../Componetes/Footers';
+import { CloudinaryContext , Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import '../Assest/Sidebar.css'
 
-export default function Dashboard() {
-    const baseUrl="https://localhost:7151/api/usuario";
+export default function DashboardMultimedia() {
+    const baseUrl="https://localhost:7151/api/multimedias";
     const [data, setData]=useState([]);
     const [modalInsertar, setModalInsertar]=useState(false);
     const [modalEditar, setModalEditar]=useState(false);
+    const [imageUrl, setImageUrl] = useState('');
 
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'SistemaFarmacia'); // Reemplaza con tu upload preset de Cloudinary
+        axios.post('https://api.cloudinary.com/v1_1/dxy6tbr7v/image/upload', formData)
+          .then(response => {
+            setImageUrl(response.data.secure_url);
+           
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      };
     const [gestorSeleccionado, setGestorSeleccionado]=useState({
-        idUsuario:'',
-        nombres:'',
-        apellidos:'',
-        correo:'',
-        contrasena:'',
-        rol: 'Usuario'
+        id:'',
+        nombre:'',
+        foto:'',
+        
 
     })
     const handleChange=e=>{
@@ -31,6 +45,7 @@ console.log(gestorSeleccionado);
     }   
     
     const peticionesGet=async()=>{
+
         await axios.get(baseUrl)
         .then(response=>{
             setData(response.data);
@@ -39,7 +54,8 @@ console.log(gestorSeleccionado);
         })
     }
     const peticionesPost=async()=>{
-        delete gestorSeleccionado.idUsuario;
+        delete gestorSeleccionado.id;
+        gestorSeleccionado.foto = imageUrl;
         await axios.post(baseUrl, gestorSeleccionado)
         .then(response=>{
             setData(data.concat(response.data));
@@ -49,18 +65,15 @@ console.log(gestorSeleccionado);
         })
     }
     const peticionesPut=async()=>{
-        
-        await axios.put(baseUrl+"/"+gestorSeleccionado.idUsuario, gestorSeleccionado)
+        gestorSeleccionado.foto = imageUrl;
+        await axios.put(baseUrl+"/"+gestorSeleccionado.id, gestorSeleccionado)
         .then(response=>{
             var respuesta=response.data;
             var dataAuxiliar=data;
            dataAuxiliar.map(gestor=>{
-            if(gestor.idUsuario===gestorSeleccionado.idUsuario){
-                gestor.nombres=respuesta.nombres;
-                gestor.apellidos=respuesta.apellidos;
-                gestor.correo=respuesta.correo;
-                gestor.contrasena=respuesta.contrasena;
-                gestor.rol=respuesta.rol;
+            if(gestor.id===gestorSeleccionado.id){
+                gestor.nombre=respuesta.nombre;
+                gestor.foto=respuesta.foto;
             }
            })
             abrirCerrarModalEditar()
@@ -87,7 +100,7 @@ console.log(gestorSeleccionado);
  
 ///////////////////////////////////////////////////////////////////////////////
     return (
-
+<CloudinaryContext cloudName="dxy6tbr7v">
       <div>
 <div>
     <Menu/>
@@ -97,27 +110,26 @@ console.log(gestorSeleccionado);
 
  <div className="content">
     <br/><br/>
-    <button onClick={()=>abrirCerrarModalInsertar()} className="btn btn-success">Insertar nuevo usuario</button>
+    <button onClick={()=>abrirCerrarModalInsertar()} className="btn btn-success">Insertar nuevo</button>
     <br/><br/>
     <table className="table table-bordered">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Acciones</th>
+                <th>Foto</th>
             </tr>
         </thead>
         <tbody>
             {data &&data.map(gestor=>(
-                <tr  key={gestor.idUsuario}>
-                    <td>{gestor.idUsuario}</td>
-                    <td>{gestor.nombres}</td>
-                    <td>{gestor.apellidos}</td>
-                    <td>{gestor.correo}</td>
-                    <td>{gestor.rol}</td>
+                <tr  key={gestor.id}>
+                    <td>{gestor.id}</td>
+                    <td>{gestor.nombre}</td>
+                    <td style={{ width: "250px", height: "250px" }}>{gestor.foto && (
+          <Image   publicId={gestor.foto}
+          style={{ maxWidth: "100%", maxHeight: "100%" }}>
+        </Image>
+        )}</td>
                     <td>
                         <button className="btn btn-primary" onClick={()=>seleccionarGestor(gestor, "Editar")}>Editar</button>{""}
                         <button className="btn btn-danger">Eliminar</button>
@@ -128,27 +140,26 @@ console.log(gestorSeleccionado);
         </tbody>
     </table>
  </div>
+ </div>
     <Modal show={modalInsertar}>
-        <ModalHeader>Insertar nuevo usuario</ModalHeader>
+        <ModalHeader>Insertar</ModalHeader>
         <ModalBody>
             <div className="form-group">
                 <label>Nombre</label>
                 <br/>
-                <input type="texto" className="form-control "name="nombres" onChange={handleChange}/>
+                <input type="texto" className="form-control "name="nombre" onChange={handleChange}/>
                 <br/>
-                <label>Apellido</label>
+                <label>Foto</label>
                 <br/>
-                <input type="texto" className="form-control"name="apellidos" onChange={handleChange}/>
-                <br/>  
-                <label>Correo</label>
-                <br/>
-                 <input type="texto" className="form-control"name="correo" onChange={handleChange}/>
-                <br/> 
-                <label>Contraseña</label>
-                <br/>
-                  <input type="password" className="form-control"name="contrasena" onChange={handleChange}/>
-                <br/>
+                <input type="file" className="form-control"name="foto" onChange={handleImageUpload}/>
             </div>
+            {imageUrl && (
+            <div>
+              <Image publicId={imageUrl}>
+                <Transformation width="50" crop="scale" />
+              </Image>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
         <button className="btn btn-primary" onClick={()=>peticionesPost()}>Insertar</button>{""}
@@ -162,28 +173,15 @@ console.log(gestorSeleccionado);
             <div className="form-group">
             <label>ID</label>
               <br/>
-              <input type="texto" className="form-control "name="nombres" readOnly value={gestorSeleccionado && gestorSeleccionado.idUsuario}/>
+              <input type="texto" className="form-control "name="nombre" readOnly value={gestorSeleccionado && gestorSeleccionado.id}/>
                 <br/>
                 <label>Nombre</label>
                 <br/>
-                <input type="texto" className="form-control "name="nombres" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.nombres}/>
+                <input type="texto" className="form-control "name="nombre" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.nombre}/>
                 <br/>
-                <label>Apellido</label>
+                <label>Foto</label>
                 <br/>
-                <input type="texto" className="form-control"name="apellidos" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.apellidos}/>
-                <br/>  
-                <label>Correo</label>
-                <br/>
-                 <input type="texto" className="form-control"name="correo" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.correo}/>
-                <br/> 
-                <label>Contraseña</label>
-                <br/>
-                  <input type="password" className="form-control"name="contrasena" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.contrasena}/>
-                <br/>
-                <label>Rol</label>
-                <br/>
-                  <input type="tecto" className="form-control"name="rol" onChange={handleChange}value={gestorSeleccionado && gestorSeleccionado.rol}/>
-                <br/>
+                <input type="file" className="form-control"name="foto" onChange={handleImageUpload}/>
             </div>
         </ModalBody>
         <ModalFooter>
@@ -192,11 +190,9 @@ console.log(gestorSeleccionado);
         </ModalFooter>
     </Modal>
 </div>
-
+<Footers/>
   </div>
-  <Footers/>
-    </div>
-    
+  </CloudinaryContext>
     )
   }
   
