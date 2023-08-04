@@ -1,6 +1,7 @@
-import React from 'react';
-import IMG from "../Assest/imagenes/amoxicilina.png";
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import "../Assest/productos.css";
+import { DataContext } from '../context/Dataprovider';
 
 export const Productos = ({
            idMedicamento,
@@ -10,7 +11,8 @@ export const Productos = ({
            nombre
 })=> {
 
-
+ const value= useContext(DataContext);
+ const addCarrito= value.addCarrito;
   return (
     <div>
           <h1 className="title">Productos</h1>
@@ -27,7 +29,7 @@ export const Productos = ({
             <p className="price">{precio}$</p>
           </div>
           <div className="buttom">
-            <button className="btn">Añadir al carrito</button>
+            <button className="btn" onClick={()=>addCarrito(idMedicamento)}>Añadir al carrito</button>
             <div>
               <a href="#" className="btn">
                 Vista

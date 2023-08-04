@@ -44,3 +44,7 @@ color: white;
 .img{
     border-radius: 50%;
 }
+.dropdown-menu {
+    min-width: 4rem; /* Ajusta este valor según tus necesidades */
+    max-width: 5rem; /* Ajusta este valor según tus necesidades */
+  }

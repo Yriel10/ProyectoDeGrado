@@ -10,11 +10,11 @@ function MenuDasbohard() {
         <ul>
           <li>
             <Icon path={mdiAccount} size={1} />
-            <NavLink to="" className="text-dark">Usuarios</NavLink>
+            <NavLink to="/dashboard" className="text-dark">Usuarios</NavLink>
           </li>
           <li>
           <Icon path={mdiMultimedia} size={1} />
-            <NavLink to="" className="text-dark">Multimedias</NavLink>
+            <NavLink to="/dashboardMultimedia" className="text-dark">Multimedias</NavLink>
           </li>
           <li>
           <Icon path={mdiStore} size={1} />

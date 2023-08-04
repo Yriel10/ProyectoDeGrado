@@ -2,7 +2,6 @@ import React from "react";
 import Carrusel from "../Componetes/Carrusel";
 import Cards from "../Componetes/Cards";
 import Footers from "../Componetes/Footers";
-import ResponsiveAppBar from "../Componetes/Menu";
 import Menu from "../Componetes/Menu2";
 import Mapa from "../Componetes/mapa";
 import Nosotros from "../Componetes/Nosotros";

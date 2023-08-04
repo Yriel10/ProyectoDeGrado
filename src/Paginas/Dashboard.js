@@ -5,6 +5,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import Footers from "../Componetes/Footers";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import "../Assest/Sidebar.css";
+import { Image } from "cloudinary-react";
 
 export default function Dashboard() {
   const baseUrl = "https://localhost:7151/api/usuario";
@@ -19,6 +20,7 @@ export default function Dashboard() {
     correo: "",
     contrasena: "",
     rol: "Usuario",
+    fotoPerfil:""
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,6 +66,7 @@ export default function Dashboard() {
             gestor.correo = respuesta.correo;
             gestor.contrasena = respuesta.contrasena;
             gestor.rol = respuesta.rol;
+            gestor.fotoPerfil = respuesta.fotoPerfil;
           }
         });
         abrirCerrarModalEditar();
@@ -114,6 +117,7 @@ export default function Dashboard() {
                 <th>Apellido</th>
                 <th>Correo</th>
                 <th>Rol</th>
+                <th>Foto</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -126,6 +130,14 @@ export default function Dashboard() {
                     <td>{gestor.apellidos}</td>
                     <td>{gestor.correo}</td>
                     <td>{gestor.rol}</td>
+                    <td style={{ width: "250px", height: "250px" }}>
+                        {gestor.fotoPerfil && (
+                          <Image
+                          cloudName="dxy6tbr7v"
+                            publicId={gestor.fotoPerfil}
+                            style={{ maxWidth: "100%", maxHeight: "100%" }}
+                          ></Image>
+                        )}</td>
                     <td>
                       <button
                         className="btn btn-primary"

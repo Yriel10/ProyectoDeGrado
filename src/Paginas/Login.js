@@ -77,7 +77,8 @@ function Login(props) {
         cookies.set("correo", usuario.correo, { path: "/" });
         cookies.set("contrasena", usuario.contrasena, { path: "/" });
         cookies.set("rol", usuario.rol, { path: "/" });
-        alert("Bienvenido:" + usuario.nombres + " " + usuario.apellidos);
+        cookies.set("fotoPerfil", usuario.fotoPefil, { path: "/" });
+        alert("Bienvenido:" + usuario.nombres + " " + usuario.apellidos+" "+usuario.fotoPefil);
         navigate("/");
       } else {
         alert("El usuario o la contraseña son incorrectos");
@@ -99,6 +100,7 @@ function Login(props) {
       });
     }
   }, [isLoading]);
+
 
   return (
     <>

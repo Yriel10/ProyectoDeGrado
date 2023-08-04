@@ -6,7 +6,7 @@ import Login from '../Paginas/Login';
 import FormularioRegistro from '../Paginas/FormularioRegistro';
 import Dashboard from '../Paginas/Dashboard';
 import DashboardMultimedia from '../Paginas/DashboardMultimedia';
-
+import {Carro} from '../Paginas/Carro'
 
 
 export const  Paginas = ( ) => {
@@ -16,6 +16,7 @@ export const  Paginas = ( ) => {
    <Route path="/tienda" element={<Tienda/> }/>
    <Route  path="/" element={<Inicio/>}/>
    <Route path='/login' element={<Login/>}/>
+   <Route path='/carro' element={<Carro/>}/>
    <Route path='/registro' element={<FormularioRegistro/>}/>
    <Route path='/dashboard' element={<Dashboard/>}/>
    <Route path='/dashboardMultimedia' element={<DashboardMultimedia/>}/>
