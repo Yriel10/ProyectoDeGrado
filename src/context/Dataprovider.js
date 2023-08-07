@@ -37,12 +37,21 @@ export const DataProvider = (props) => {
       alert("El producto ya fue seleccionado");
     }
   };
+  useEffect(() => {
+    const dataCarrito = JSON.parse(localStorage.getItem("dataCarrito"));
+    if (dataCarrito) {
+      setCarrito(dataCarrito);
+    }
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem("dataCarrito", JSON.stringify(carrito));
+  }, [carrito]);
 
   return (
-    <DataContext.Provider value={{ productos, addCarrito,setCarrito,
-      carrito,
-      setCarrito }}>
+    <DataContext.Provider
+      value={{ productos, addCarrito, setCarrito, carrito }}
+    >
       {props.children}
     </DataContext.Provider>
   );

@@ -9,12 +9,14 @@ export default function Tienda() {
   const value = useContext(DataContext);
   const productos = value.productos;
 
+
   return (
     <>
       <div>
         <Menu />
       </div>
-      <div>
+      <h1 className="title">Productos</h1>
+      <div className="productos">
         {productos.map((producto) => (
           <Productos
             key={producto.idMedicamento}
@@ -23,10 +25,10 @@ export default function Tienda() {
             categoria={producto.categoria}
             precio={producto.precio}
             nombre={producto.nombre}
-          />
+          /> 
         ))}
+     
       </div>
-
       <Footers />
     </>
   );

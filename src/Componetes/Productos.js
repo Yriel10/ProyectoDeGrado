@@ -15,8 +15,8 @@ export const Productos = ({
  const addCarrito= value.addCarrito;
   return (
     <div>
-          <h1 className="title">Productos</h1>
-      <div className="productos">
+         
+      
         <div className="producto">
           <a href="#">
             <div className="producto_img">
@@ -26,7 +26,7 @@ export const Productos = ({
           <div className="producto_footer">
             <h1>{nombre}</h1>
             <p> {categoria}</p>
-            <p className="price">{precio}$</p>
+            <p className="price">${precio}</p>
           </div>
           <div className="buttom">
             <button className="btn" onClick={()=>addCarrito(idMedicamento)}>Añadir al carrito</button>
@@ -37,7 +37,8 @@ export const Productos = ({
             </div>
           </div>
         </div>
-      </div>
+        
+      
     </div>
   )
 }
