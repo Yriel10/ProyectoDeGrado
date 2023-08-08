@@ -7,6 +7,8 @@ import FormularioRegistro from '../Paginas/FormularioRegistro';
 import Dashboard from '../Paginas/Dashboard';
 import DashboardMultimedia from '../Paginas/DashboardMultimedia';
 import {Carro} from '../Paginas/Carro'
+import DashboardFacturas from '../Paginas/DashboarFacturas';
+import DashboardProductos from '../Paginas/DashboarProductos';
 
 
 export const  Paginas = ( ) => {
@@ -20,6 +22,8 @@ export const  Paginas = ( ) => {
    <Route path='/registro' element={<FormularioRegistro/>}/>
    <Route path='/dashboard' element={<Dashboard/>}/>
    <Route path='/dashboardMultimedia' element={<DashboardMultimedia/>}/>
+   <Route path='/dashboardFactura' element={<DashboardFacturas/>}/>
+   <Route path='/dashboardProductos' element={<DashboardProductos/>}/>
     </Routes>
     </BrowserRouter>
  

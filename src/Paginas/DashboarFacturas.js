@@ -7,10 +7,8 @@ import MenuDasbohard from "../Componetes/MenuDasbohard";
 import "../Assest/Sidebar.css";
 import { Image } from "cloudinary-react";
 
-export default function Dashboard() {
-
-
-  const baseUrl = "https://localhost:7151/api/usuario";
+export default function DashboardFacturas() {
+  const baseUrl = "https://localhost:7151/api/factura";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);

@@ -2,21 +2,22 @@ import React from 'react';
 import {MDBFooter,MDBContainer,MDBBtn} from 'mdb-react-ui-kit';
 import Icon from '@mdi/react';
 import { mdiFacebook,mdiInstagram,mdiTwitter  } from '@mdi/js';
+import { Link } from 'react-router-dom';
 
  function Footers() {
   return (
     <MDBFooter className='bg-dark text-center text-white'>
     <MDBContainer className='p-4 pb-0'>
       <section className='mb-4'>
-        <MDBBtn outline color="light" floating className='m-1' href='https://www.facebook.com/Farmaciajehovarafha01' role='button'>
-        <Icon path={mdiFacebook} size={1} />
-        </MDBBtn>
-        <MDBBtn outline color="light" floating className='m-1' href='https://www.facebook.com/Farmaciajehovarafha01' role='button'>
-        <Icon path={mdiTwitter} size={1} />
-        </MDBBtn>
-        <MDBBtn outline color="light" floating className='m-1' href='https://www.facebook.com/Farmaciajehovarafha01' role='button'>
-        <Icon path={mdiInstagram} size={1} />
-        </MDBBtn>
+        <a  href='https://www.facebook.com/Farmaciajehovarafha01' >
+        <Icon path={mdiFacebook} size={2} />
+        </a>
+        <a  href='https://www.facebook.com/Farmaciajehovarafha01' >
+        <Icon path={mdiTwitter} size={2} />
+        </a>
+        <a  href='https://www.instagram.com/farmacia_jehova_rafha/' >
+        <Icon path={mdiInstagram} size={2} />
+        </a>
       </section>
     </MDBContainer>
 

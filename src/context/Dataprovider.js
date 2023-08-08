@@ -6,6 +6,8 @@ export const DataContext = createContext();
 export const DataProvider = (props) => {
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
+  const [total,setTotal]= useState(0);
+  const [cantidadPorProducto, setCantidadPorProducto] = useState({});
 
   useEffect(() => {
     // Función para obtener los datos de la base de datos
@@ -27,12 +29,20 @@ export const DataProvider = (props) => {
     const check = carrito.every((item) => {
       return item.idMedicamento !== idMedicamento;
     });
-    if (check) {
-      const data = productos.filter((productos) => {
-        return productos.idMedicamento === idMedicamento;
-      });
 
-      setCarrito([...carrito, ...data]);
+    if (check) {
+      const data = productos.find((producto) => producto.idMedicamento === idMedicamento);
+      if (data) {
+
+        const newCarrito = [
+          ...carrito,
+          {
+            ...data,
+            cantidad: cantidadPorProducto[idMedicamento] || 1,
+          },
+        ];
+        setCarrito(newCarrito);
+      }
     } else {
       alert("El producto ya fue seleccionado");
     }
@@ -48,9 +58,21 @@ export const DataProvider = (props) => {
     localStorage.setItem("dataCarrito", JSON.stringify(carrito));
   }, [carrito]);
 
+  useEffect(() => {
+    const getTotal = () => {
+      const res = carrito.reduce((prev, item) => {
+        const cantidad = cantidadPorProducto[item.idMedicamento] || 1;
+        return prev + item.precio * cantidad;
+      }, 0);
+      setTotal(res);
+    };
+    getTotal();
+  }, [carrito, cantidadPorProducto]);
+  
+
   return (
     <DataContext.Provider
-      value={{ productos, addCarrito, setCarrito, carrito }}
+      value={{ productos, addCarrito, setCarrito, carrito, total, setTotal, cantidadPorProducto,setCantidadPorProducto }}
     >
       {props.children}
     </DataContext.Provider>
