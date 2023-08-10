@@ -32,6 +32,12 @@ export default function DashboardProductos() {
     idMedicamento: "",
     nombre: "",
     foto: "",
+    nombreFabricante: "",
+    precio: "",
+    categoria: "",
+    cantidad: "",
+    codigo: "",
+    tipoMedicamento: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,22 +59,38 @@ export default function DashboardProductos() {
       });
   };
   const peticionesPost = async () => {
-    delete gestorSeleccionado.idMedicamento;
-    gestorSeleccionado.foto = imageUrl;
-    await axios
-      .post(baseUrl, gestorSeleccionado)
-      .then((response) => {
-        setData(data.concat(response.data));
-        abrirCerrarModalInsertar();
-      })
-      .catch((error) => {
-        console.log(error);
+    if (!imageUrl) {
+      console.log("La imagen aún no se ha cargado");
+      return;
+    }
+
+    const postData = {
+      nombre: gestorSeleccionado.nombre,
+      nombreFabricante: gestorSeleccionado.nombreFabricante,
+      categoria: gestorSeleccionado.categoria,
+      precio: gestorSeleccionado.precio,
+      cantidad: gestorSeleccionado.cantidad,
+      codigo: gestorSeleccionado.codigo,
+      tipoMedicamento: gestorSeleccionado.tipoMedicamento,
+      foto: imageUrl,
+    };
+
+    try {
+      const response = await axios.post(baseUrl, postData, {
+        headers: {
+          "Content-Type": "application/json", // Asegúrate de incluir este encabezado
+        },
       });
+      setData([...data, response.data]);
+      abrirCerrarModalInsertar();
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
   const peticionesPut = async () => {
     if (imageUrl !== "") {
-        gestorSeleccionado.foto = imageUrl;
-      }
+      gestorSeleccionado.foto = imageUrl;
+    }
     await axios
       .put(baseUrl + "/" + gestorSeleccionado.idMedicamento, gestorSeleccionado)
       .then((response) => {
@@ -78,13 +100,12 @@ export default function DashboardProductos() {
           if (gestor.idMedicamento === gestorSeleccionado.idMedicamento) {
             gestor.nombre = respuesta.nombre;
             gestor.foto = respuesta.foto;
-            gestor.nombreFabricante= respuesta.nombreFabricante
-            gestor.precio= respuesta.precio
-            gestor.categoria= respuesta.categoria
-            gestor.cantidad= respuesta.cantidad
-            gestor.codigo= respuesta.codigo
-            gestor.tipoMedicamento= respuesta.tipoMedicamento
-          
+            gestor.nombreFabricante = respuesta.nombreFabricante;
+            gestor.precio = respuesta.precio;
+            gestor.categoria = respuesta.categoria;
+            gestor.cantidad = respuesta.cantidad;
+            gestor.codigo = respuesta.codigo;
+            gestor.tipoMedicamento = respuesta.tipoMedicamento;
           }
         });
         abrirCerrarModalEditar();
@@ -193,71 +214,71 @@ export default function DashboardProductos() {
               />
               <br />
               <br />
-                <label>Fabricante</label>
-                <br />
-                <input
-                  type="text"
-                  className="form-control "
-                  name="nombreFabricante"
-                  onChange={handleChange}
-                />
-                <br />
-                <label>Categoria</label>
-                <br />
-                <input
-                  type="text"
-                  className="form-control "
-                  name="categoria"
-                  onChange={handleChange}
-                />
-                <br />
-                <label>Precio</label>
-                <br />
-                <input
-                  type="number"
-                  className="form-control "
-                  name="precio"
-                  onChange={handleChange}
-                />
-                <br />
-                <label>Cantidad</label>
-                <br />
-                <input
-                  type="number"
-                  className="form-control "
-                  name="cantidad"
-                  onChange={handleChange}
-                />
-                <br />
-                <label>Codigo</label>
-                <br />
-                <input
-                  type="number"
-                  className="form-control "
-                  name="codigo"
-                  onChange={handleChange}
-                />
-                 <br />
-                <label>Receta</label>
-                <br />
-                <input
-                  type="radio"
-                  className=""
-                  name="tipoMedicamento"
-                  checked={gestorSeleccionado.tipoMedicamento === true}
-                  onChange={handleChange}
-                />
-                <label>Si</label>
-                <br/>
-                <input
-                  type="radio"
-                  className=""
-                  name="tipoMedicamento"
-                  checked={gestorSeleccionado.tipoMedicamento === false}
-                  onChange={handleChange}
-                />  
-                 <label>No</label>
-                <br />
+              <label>Fabricante</label>
+              <br />
+              <input
+                type="text"
+                className="form-control "
+                name="nombreFabricante"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Categoria</label>
+              <br />
+              <input
+                type="text"
+                className="form-control "
+                name="categoria"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Precio</label>
+              <br />
+              <input
+                type="number"
+                className="form-control "
+                name="precio"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Cantidad</label>
+              <br />
+              <input
+                type="number"
+                className="form-control "
+                name="cantidad"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Codigo</label>
+              <br />
+              <input
+                type="number"
+                className="form-control "
+                name="codigo"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Receta</label>
+              <br />
+              <input
+                type="radio"
+                name="tipoMedicamento"
+                value={true}
+                checked={gestorSeleccionado.tipoMedicamento === true}
+                onChange={handleChange}
+              />
+              <label>Si</label>
+              <br />
+              <input
+                type="radio"
+                name="tipoMedicamento"
+                value={false}
+                checked={gestorSeleccionado.tipoMedicamento === false}
+                onChange={handleChange}
+              />
+              <label>No</label>
+              <br />
               <label>Foto</label>
               <br />
               <input
@@ -323,7 +344,9 @@ export default function DashboardProductos() {
                   className="form-control "
                   name="nombreFabricante"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.nombreFabricante}
+                  value={
+                    gestorSeleccionado && gestorSeleccionado.nombreFabricante
+                  }
                 />
                 <br />
                 <label>Categoria</label>
@@ -365,23 +388,23 @@ export default function DashboardProductos() {
                   onChange={handleChange}
                   value={gestorSeleccionado && gestorSeleccionado.codigo}
                 />
-                
+
                 <br />
                 <label>Receta</label>
                 <br />
                 <input
-                type="radio"
-                name="tipoMedicamento"
-                checked={gestorSeleccionado.tipoMedicamento === true}
-                onChange={handleChange}
+                  type="radio"
+                  name="tipoMedicamento"
+                  checked={gestorSeleccionado.tipoMedicamento === true}
+                  onChange={handleChange}
                 />
                 <label>Si</label>
                 <br />
                 <input
-                type="radio"
-                name="tipoMedicamento"
-                checked={gestorSeleccionado.tipoMedicamento === false}
-                onChange={handleChange}
+                  type="radio"
+                  name="tipoMedicamento"
+                  checked={gestorSeleccionado.tipoMedicamento === false}
+                  onChange={handleChange}
                 />
                 <label>No</label>
                 <br />
@@ -392,10 +415,8 @@ export default function DashboardProductos() {
                   type="file"
                   className="form-control"
                   name="foto"
-                 
                   onChange={handleImageUpload}
                 />
-              
               </div>
             </ModalBody>
             <ModalFooter>
