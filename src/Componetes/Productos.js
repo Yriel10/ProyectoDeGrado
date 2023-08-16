@@ -30,11 +30,7 @@ export const Productos = ({
           </div>
           <div className="buttom">
             <button className="btn" onClick={()=>addCarrito(idMedicamento)}>Añadir al carrito</button>
-            <div>
-              <a href="#" className="btn">
-                Vista
-              </a>
-            </div>
+            
           </div>
         </div>
         

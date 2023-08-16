@@ -5,8 +5,7 @@ import {
   MDBContainer,
   MDBCard,
   MDBCardBody,
-  MDBInput,
-  MDBCheckbox
+  MDBInput
 }
 from 'mdb-react-ui-kit';
 import Footers from '../Componetes/Footers';

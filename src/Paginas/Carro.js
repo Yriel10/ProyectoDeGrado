@@ -8,6 +8,8 @@ import {
 } from "@mdi/js";
 import "../Assest/carro.css";
 import { DataContext } from "../context/Dataprovider";
+import Cookies from "universal-cookie";
+import { useNavigate  } from "react-router-dom";
 
 export const Carro = (props) => {
   const value = useContext(DataContext);
@@ -16,7 +18,9 @@ export const Carro = (props) => {
   const setCarrito = value.setCarrito;
   const cantidadPorProducto = value.cantidadPorProducto;
   const total = value.total;
-  const setCantidadPorProducto = value.setCantidadPorProducto; // Use this
+  const setCantidadPorProducto = value.setCantidadPorProducto; 
+  let navigate= useNavigate();
+  const setCartTotal = value.setTotal;
 
   const toofalse = () => {
     setCarro(false);
@@ -39,29 +43,21 @@ export const Carro = (props) => {
       ...cantidadPorProducto,
       [idMedicamento]: (cantidadPorProducto[idMedicamento] || 1) + 1,
     });
+    
   };
 
-  const addToCart = (idMedicamento) => {
-    const item = carrito.find((item) => item.idMedicamento === idMedicamento);
+  const addToCart = () => {
+    let calculatedTotal = 0;
+    carrito.forEach((producto) => {
+      calculatedTotal +=
+        (cantidadPorProducto[producto.idMedicamento] || 1) * producto.precio;
+    });
 
-    if (item) {
-      item.cantidad += 1;
-      setCantidadPorProducto({
-        ...cantidadPorProducto,
-        [idMedicamento]: item.cantidad,
-      });
-    } else {
-      const producto = value.productos.find(
-        (producto) => producto.idMedicamento === idMedicamento
-      );
-      if (producto) {
-        setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-        setCantidadPorProducto({
-          ...cantidadPorProducto,
-          [idMedicamento]: 1,
-        });
-      }
-    }
+    const cookies = new Cookies();
+    cookies.set("cartTotal", calculatedTotal, { path: "/pago" });
+
+    setCartTotal(calculatedTotal); // Actualizar el estado del total
+    navigate("/pago");
   };
 
   const removeProducto = (idMedicamento) => {
@@ -123,7 +119,7 @@ export const Carro = (props) => {
 
         <div className="carrito_footer">
           <h3>Total: ${total}</h3>
-          <button className="btn" onClick={()=>addToCart()}>Comprar</button>
+         <button className="btn" onClick={()=>addToCart() }>Comprar</button>
         </div>
       </div>
     </div>
