@@ -4,7 +4,6 @@ import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import Footers from "../Componetes/Footers";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
-import "../Assest/Sidebar.css";
 import { Image } from "cloudinary-react";
 
 export default function DashboardFacturas() {
@@ -70,6 +69,7 @@ export default function DashboardFacturas() {
           }
         });
         abrirCerrarModalEditar();
+        peticionesGet();
       })
       .catch((error) => {
         console.log(error);

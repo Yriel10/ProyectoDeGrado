@@ -26,6 +26,7 @@ const carrito=value.carrito;
   const cookies= new Cookies();
   let navigate= useNavigate();
   const estado= cookies.get('id');
+  
   const roles= cookies.get('rol');
   const foto = cookies.get('fotoPerfil');
 const perfil = "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/SistemaFarmacia/nombreFarmacia_exzjuw.jpg"; // Valor predeterminado en caso de que foto sea undefined
@@ -91,11 +92,11 @@ const perfil = "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/Si
                 className="me-2"
                 aria-label="Buscar"
               />
-              <Button className="warning">Buscar</Button>
+              <Button className="btn btn-primary">Buscar</Button>
             </Form>
             <NavDropdown
               title={
-                <div className="">
+                <div className="dropdown-menuPerfil">
                   <Image
                   cloudName="dxy6tbr7v"
                     className="fotoPerfil"
@@ -107,7 +108,7 @@ const perfil = "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/Si
               id="basic-nav-dropdown" 
              
             >
-              <NavDropdown.Item href="/profile">Perfil</NavDropdown.Item>
+              <NavDropdown.Item href="/perfil">Perfil</NavDropdown.Item>
               {(estado=== undefined) ?<NavDropdown.Item href="/login">Login</NavDropdown.Item>:<NavDropdown.Item href="/" onClick={()=>cerrarSesion()}>Logout</NavDropdown.Item>}
               {(rol=== 'Administrador') ?(<NavDropdown.Item href="/dashboard">Dashboard</NavDropdown.Item>):<NavDropdown.Item href="/"></NavDropdown.Item>}
             </NavDropdown>

@@ -6,9 +6,8 @@ import Footers from "../Componetes/Footers";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 
-
-export default function DashboardMultimedia() {
-  const baseUrl = "https://localhost:7151/api/multimedias";
+export default function DashboarOfertas() {
+  const baseUrl = "https://localhost:7151/api/ofertas";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -33,6 +32,8 @@ export default function DashboardMultimedia() {
     id: "",
     nombre: "",
     foto: "",
+    descripcion: "",
+    fechaValidez: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +78,8 @@ export default function DashboardMultimedia() {
           if (gestor.id === gestorSeleccionado.id) {
             gestor.nombre = respuesta.nombre;
             gestor.foto = respuesta.foto;
+            gestor.descripcion=respuesta.descripcion;
+            gestor.fechaValidez=respuesta.fechaValidez;
           }
         });
         abrirCerrarModalEditar();
@@ -89,7 +92,7 @@ export default function DashboardMultimedia() {
     await axios
       .delete(baseUrl + "/" + gestorSeleccionado.id)
       .then(() => {
-        setData(data.filter(gestor => gestor.id !== gestorSeleccionado.id));
+        setData(data.filter((gestor) => gestor.id !== gestorSeleccionado.id));
         abrirCerrarModalEliminar();
       })
       .catch((error) => {
@@ -134,7 +137,7 @@ export default function DashboardMultimedia() {
               onClick={() => abrirCerrarModalInsertar()}
               className="btn btn-success"
             >
-              Insertar nueva portada
+              Nueva oferta
             </button>
             <br />
             <br />
@@ -144,6 +147,8 @@ export default function DashboardMultimedia() {
                   <th>ID</th>
                   <th>Nombre</th>
                   <th>Foto</th>
+                  <th>Descripción</th>
+                  <th>Fecha de validez</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,6 +165,8 @@ export default function DashboardMultimedia() {
                           ></Image>
                         )}
                       </td>
+                      <td>{gestor.descripcion}</td>
+                      <td>{gestor.fechaValidez}</td>
                       <td>
                         <button
                           className="btn btn-primary"
@@ -168,9 +175,12 @@ export default function DashboardMultimedia() {
                           Editar
                         </button>
                         {""}
-                        <button className="btn btn-danger"
-                         onClick={() => seleccionarGestor(gestor, "Eliminar")}
-                         >Eliminar</button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => seleccionarGestor(gestor, "Eliminar")}
+                        >
+                          Eliminar
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -198,6 +208,22 @@ export default function DashboardMultimedia() {
                 className="form-control"
                 name="foto"
                 onChange={handleImageUpload}
+              />
+              <label>Descripción</label>
+              <br />
+              <input
+                type="texto"
+                className="form-control "
+                name="descripcion"
+                onChange={handleChange}
+              />
+              <label>Fecha de validez</label>
+              <br />
+              <input
+                type="texto"
+                className="form-control "
+                name="fechaValidez"
+                onChange={handleChange}
               />
             </div>
             {imageUrl && (
@@ -277,15 +303,16 @@ export default function DashboardMultimedia() {
           </Modal>
         </div>
         <div>
-        <Modal show={modalEliminar}>
-            <ModalBody>
-              ¿Está seguro de eliminar el registro?
-            </ModalBody>
+          <Modal show={modalEliminar}>
+            <ModalBody>¿Está seguro de eliminar el registro?</ModalBody>
             <ModalFooter>
               <button className="btn btn-danger" onClick={peticionesDelete}>
                 Si
               </button>
-              <button className="btn btn-secondary" onClick={abrirCerrarModalEliminar}>
+              <button
+                className="btn btn-secondary"
+                onClick={abrirCerrarModalEliminar}
+              >
                 No
               </button>
             </ModalFooter>
@@ -293,8 +320,6 @@ export default function DashboardMultimedia() {
         </div>
         <Footers />
       </div>
-      
-
     </CloudinaryContext>
   );
 }

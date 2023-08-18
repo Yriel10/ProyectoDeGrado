@@ -1,49 +1,57 @@
 import CardGroup from 'react-bootstrap/CardGroup';
 import Card from 'react-bootstrap/Card';
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Image } from "cloudinary-react";
 function Cards() {
+  const baseUrl = "https://localhost:7151/api/ofertas";
+  const [data, setData] = useState([]);
+
+  const [gestorSeleccionado, setGestorSeleccionado] = useState({
+    id: "",
+    nombre: "",
+    foto: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setGestorSeleccionado({
+      ...gestorSeleccionado,
+      [name]: value,
+    });
+    console.log(gestorSeleccionado);
+  };
+
+  const peticionesGet = async () => {
+    await axios
+      .get(baseUrl)
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    peticionesGet();
+  }, []);
+
   return (
     <CardGroup>
+        {data.map((gestor)=>(
+           gestor.foto && ( 
       <Card>
-        <Card.Img variant="top" src="../imagenes/320750769_460792116072738_5137338508341423261_n.png " width={20} height={300}/>
+        <Card.Img variant="top" src={gestor.foto} />
         <Card.Body>
-          <Card.Title>Card title</Card.Title>
+          <Card.Title>{gestor.nombre}</Card.Title>
           <Card.Text>
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
+            {gestor.descripcion}
           </Card.Text>
         </Card.Body>
         <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
+          <small className="text-muted">{gestor.fechaValidez}</small>
         </Card.Footer>
       </Card>
-      <Card>
-        <Card.Img variant="top" src="../imagenes/InstalacionesCEMA--5-6236481.jpg" width={20} height={300}/>
-        <Card.Body>
-          <Card.Title>Card title</Card.Title>
-          <Card.Text>
-            This card has supporting text below as a natural lead-in to
-            additional content.{' '}
-          </Card.Text>
-        </Card.Body>
-        <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Img variant="top" src="../imagenes/nombreFarmacia.jpg" width={20} height={300} />
-        <Card.Body>
-          <Card.Title>Card title</Card.Title>
-          <Card.Text>
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This card has even longer content than the
-            first to show that equal height action.
-          </Card.Text>
-        </Card.Body>
-        <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
-        </Card.Footer>
-      </Card>
+        )))}
     </CardGroup>
 
 

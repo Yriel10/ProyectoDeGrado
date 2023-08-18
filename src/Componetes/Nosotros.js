@@ -13,8 +13,16 @@ export default function Nosotros() {
           {<br />}tuvimos que cambiar de local, este se instaló en Sabana
           palenque y reabrimos nuestras puertas en el 2021{<br />} ya que el
           proceso se atrasó un tiempo por el COVID 19 y los procesos se tardaron
-          más tiempo de lo requerido.
+          más tiempo de lo requerido.{<br/>}Nuestra farmacia cuenta con contratos
+          con farmacias mas grandes para poder obtener medicamentos que la comunidad necesita
+          estamos trabajando para llevar la salud a nuestro municipio.
         </p>
+        <span className="titulo">Valores</span>
+        <ul>
+          <li>
+            
+          </li>
+        </ul>
       </div>
     </div>
   );

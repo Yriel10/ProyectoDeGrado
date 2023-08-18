@@ -1,50 +1,63 @@
-
-.icon{
-    
-    color: white;
-    flex-direction: row-reverse;
-   width: 30px;
-   bottom: 1rem;
-    left: -2rem;
+.icon {
+  color: white;
+  flex-direction: row-reverse;
+  width: 30px;
+  bottom: 1rem;
+  left: -2rem;
 }
-.icon:hover{
-    border: 1px solid rgba(255, 0, 0, 0.196);
+.icon:hover {
+  border: 1px solid rgba(255, 0, 0, 0.196);
 }
-.button{
-    background-color: black;
+.btn {
+  margin-right: 5px;
 }
-.item-total{
-    position: relative;
-    top: -1rem;
-    right: 0.5rem;
-    width: -2.5rem;
-    border: 1px solid red;
-    border-radius: 50%;
-    justify-content: center;
-    background-color: red;
-    color: white;
+.item-total {
+  position: relative;
+  top: -1rem;
+  right: 0.5rem;
+  width: -2.5rem;
+  border: 1px solid red;
+  border-radius: 50%;
+  justify-content: center;
+  background-color: red;
+  color: white;
 }
-nav.navbar{
-background:linear-gradient(0deg, rgba(0,133,246,0.6643907563025211) 0%, rgba(0,147,255,1) 100%);
-border: 2.5px solid rgba(255, 255, 255, 0.544);
-
-
+nav.navbar {
+  background: linear-gradient(
+    0deg,
+    rgba(0, 133, 246, 0.6643907563025211) 0%,
+    rgba(0, 147, 255, 1) 100%
+  );
+  border: 2.5px solid rgba(255, 255, 255, 0.544);
 }
-.navbar-brand{
-color: white;
+.navbar-brand {
+  color: white;
 }
 .navbar-light .navbar-nav .nav-link {
-    color: white;
-    }
-.fotoPerfil{
-    border-radius: 50%;
-    width: 60px;
-  
+  color: white;
 }
-.img{
-    border-radius: 50%;
+.fotoPerfil {
+  border-radius: 50%;
+  width: 60px;
+}
+.img {
+  border-radius: 50%;
 }
 .dropdown-menu {
-    min-width: 4rem; /* Ajusta este valor según tus necesidades */
-    max-width: 5rem; /* Ajusta este valor según tus necesidades */
+  min-width: 4rem; /* Ajusta este valor según tus necesidades */
+  max-width: 7rem; /* Ajusta este valor según tus necesidades */
+
+}
+.dropdown-item {
+  margin-right: 5px;
+ 
+  min-width: 4rem; /* Ajusta este valor según tus necesidades */
+  max-width: 5.5rem; /* Ajusta este valor según tus necesidades */
+}
+.dropdown{
+    margin-right: 20px;
+    
+}
+.dropdown-toggle::after {
+    content: none;
   }

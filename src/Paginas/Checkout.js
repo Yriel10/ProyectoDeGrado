@@ -7,6 +7,7 @@ import { useEffect, useContext } from "react";
 import Cookies from "universal-cookie"
 import axios from "axios";
 import { DataContext } from "../context/Dataprovider";
+import Menu from "../Componetes/Menu2";
 
 
 const stripePromise = loadStripe(
@@ -75,6 +76,10 @@ export default function Checkout() {
     window.location.reload(); // Recargar la página
   };
   return (
+    <>
+    <div>
+      <Menu/>
+    </div>
     <Elements stripe={stripePromise}>
         <div className="container p-4">
             <div className="row">
@@ -87,5 +92,6 @@ export default function Checkout() {
         </div>
 
     </Elements>
+    </>
   );
 }

@@ -71,14 +71,14 @@ function Login(props) {
       );
       const usuario = response.data[0];
       if (usuario) {
-        cookies.set("id", usuario.id, { path: "/" });
+        cookies.set("id", usuario.idUsuario, { path: "/" });
         cookies.set("nombres", usuario.nombres, { path: "/" });
         cookies.set("apellidos", usuario.apellidos, { path: "/" });
         cookies.set("correo", usuario.correo, { path: "/" });
         cookies.set("contrasena", usuario.contrasena, { path: "/" });
         cookies.set("rol", usuario.rol, { path: "/" });
         cookies.set("fotoPerfil", usuario.fotoPefil, { path: "/" });
-        alert("Bienvenido:" + usuario.nombres + " " + usuario.apellidos+" "+usuario.fotoPefil);
+        alert("Bienvenido:" + usuario.nombres + " " + usuario.apellidos);
         navigate("/");
       } else {
         alert("El usuario o la contraseña son incorrectos");

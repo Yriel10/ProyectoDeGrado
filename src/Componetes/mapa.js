@@ -4,7 +4,7 @@ export default function mapa() {
   return (
     <>
       <div className="element">
-        <span className="Ubicacion">Ubicacion</span>
+
         <div className="columnas">
           <div className="maps">
             <iframe
