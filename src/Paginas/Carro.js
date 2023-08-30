@@ -9,7 +9,7 @@ import {
 import "../Assest/carro.css";
 import { DataContext } from "../context/Dataprovider";
 import Cookies from "universal-cookie";
-import { useNavigate  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const Carro = (props) => {
   const value = useContext(DataContext);
@@ -18,8 +18,8 @@ export const Carro = (props) => {
   const setCarrito = value.setCarrito;
   const cantidadPorProducto = value.cantidadPorProducto;
   const total = value.total;
-  const setCantidadPorProducto = value.setCantidadPorProducto; 
-  let navigate= useNavigate();
+  const setCantidadPorProducto = value.setCantidadPorProducto;
+  let navigate = useNavigate();
   const setCartTotal = value.setTotal;
 
   const toofalse = () => {
@@ -31,21 +31,51 @@ export const Carro = (props) => {
 
   const resta = (idMedicamento) => {
     if (cantidadPorProducto[idMedicamento] > 1) {
-      setCantidadPorProducto({
+      const updatedCantidadPorProducto = {
         ...cantidadPorProducto,
         [idMedicamento]: cantidadPorProducto[idMedicamento] - 1,
+      };
+      setCantidadPorProducto(updatedCantidadPorProducto);
+      
+      // Actualizar el carrito con la nueva cantidad
+      const updatedCarrito = carrito.map((item) => {
+        if (item.idMedicamento === idMedicamento) {
+          return {
+            ...item,
+            cantidad: updatedCantidadPorProducto[idMedicamento],
+          };
+        }
+        return item;
       });
+      setCarrito(updatedCarrito);
+
+      // Actualizar el almacenamiento local
+      localStorage.setItem("dataCarrito", JSON.stringify(updatedCarrito));
     }
   };
 
   const suma = (idMedicamento) => {
-    setCantidadPorProducto({
+    const updatedCantidadPorProducto = {
       ...cantidadPorProducto,
       [idMedicamento]: (cantidadPorProducto[idMedicamento] || 1) + 1,
-    });
-    
-  };
+    };
+    setCantidadPorProducto(updatedCantidadPorProducto);
 
+    // Actualizar el carrito con la nueva cantidad
+    const updatedCarrito = carrito.map((item) => {
+      if (item.idMedicamento === idMedicamento) {
+        return {
+          ...item,
+          cantidad: updatedCantidadPorProducto[idMedicamento],
+        };
+      }
+      return item;
+    });
+    setCarrito(updatedCarrito);
+
+    // Actualizar el almacenamiento local
+    localStorage.setItem("dataCarrito", JSON.stringify(updatedCarrito));
+  };
   const addToCart = () => {
     let calculatedTotal = 0;
     carrito.forEach((producto) => {
@@ -53,16 +83,18 @@ export const Carro = (props) => {
         (cantidadPorProducto[producto.idMedicamento] || 1) * producto.precio;
     });
 
+    localStorage.setItem("cartTotal", calculatedTotal);
+    setCartTotal(calculatedTotal); // Actualizar el estado del total
     const cookies = new Cookies();
     cookies.set("cartTotal", calculatedTotal, { path: "/pago" });
-
-    setCartTotal(calculatedTotal); // Actualizar el estado del total
     navigate("/pago");
   };
 
   const removeProducto = (idMedicamento) => {
     if (window.confirm("¿Quieres eliminar este artículo?")) {
-      setCarrito(carrito.filter((item) => item.idMedicamento !== idMedicamento));
+      setCarrito(
+        carrito.filter((item) => item.idMedicamento !== idMedicamento)
+      );
       setCantidadPorProducto({
         ...cantidadPorProducto,
         [idMedicamento]: 1, // Reiniciar la cantidad a 1 después de eliminar del carrito
@@ -78,48 +110,57 @@ export const Carro = (props) => {
         <h2>Su carrito</h2>
 
         <div className="carrito_center">
+          {carrito.length === 0 ? (
+            <h2
+              style={{
+                textAlign: "center",
+                fontSize: "3rem",
+              }}
+            >
+              carrito Vacio
+            </h2>
+          ) : (
+            <>
+              {carrito.map((productos) => (
+                <div className="carrito_item" key={productos.idMedicamento}>
+                  <img src={productos.foto} alt=""></img>
 
-          {
-          carrito.length===0 ? <h2 style={{
-            textAlign:"center", fontSize:"3rem"
-          }}>carrito Vacio</h2>:<>
-          {
-          carrito.map((productos) => (
-            <div className="carrito_item" key={productos.idMedicamento}>
-              <img src={productos.foto} alt=""></img>
-
-              <div>
-                <h3>{productos.nombre}</h3>
-                <p className="price">${productos.precio}</p>
-              </div>
-              <div>
-                <Icon
-                  path={mdiTriangle}
-                  className="punto"
-                  onClick={() => suma(productos.idMedicamento)}
-                />
-                <p className="cantidad">{cantidadPorProducto[productos.idMedicamento] || 1}</p>
-                <Icon
-                  path={mdiTriangleDown}
-                  className="punto"
-                  onClick={() => resta(productos.idMedicamento)}
-                />
-              </div>
-              <div
-                className="remove_item"
-                onClick={() => removeProducto(productos.idMedicamento)}
-              >
-                <Icon path={mdiDeleteCircle} className="punto" />
-              </div>
-            </div>
-          ))}
-          </>
-}
+                  <div>
+                    <h3>{productos.nombre}</h3>
+                    <p className="price">${productos.precio}</p>
+                  </div>
+                  <div>
+                    <Icon
+                      path={mdiTriangle}
+                      className="punto"
+                      onClick={() => suma(productos.idMedicamento)}
+                    />
+                    <p className="cantidad">
+                      {cantidadPorProducto[productos.idMedicamento] || 1}
+                    </p>
+                    <Icon
+                      path={mdiTriangleDown}
+                      className="punto"
+                      onClick={() => resta(productos.idMedicamento)}
+                    />
+                  </div>
+                  <div
+                    className="remove_item"
+                    onClick={() => removeProducto(productos.idMedicamento)}
+                  >
+                    <Icon path={mdiDeleteCircle} className="punto" />
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
         </div>
 
         <div className="carrito_footer">
           <h3>Total: ${total}</h3>
-         <button className="btn" onClick={()=>addToCart() }>Comprar</button>
+          <button className="btn" onClick={() => addToCart()}>
+            Comprar
+          </button>
         </div>
       </div>
     </div>

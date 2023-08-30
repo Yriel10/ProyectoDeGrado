@@ -5,6 +5,7 @@ import Footers from "../Componetes/Footers";
 import Menu from "../Componetes/Menu2";
 import Mapa from "../Componetes/mapa";
 import Nosotros from "../Componetes/Nosotros";
+import VentanaFlotante from "../Componetes/VentanaFlotante";
 
 export default function Inicio() {
   return (
@@ -15,6 +16,7 @@ export default function Inicio() {
       <div className="carrusel">
         <Carrusel></Carrusel>
       </div>
+      
       <div className="cards" id="ofertas">
         <Cards />
       </div>
@@ -23,6 +25,9 @@ export default function Inicio() {
       </div>
       <div id="nosotros">
         <Nosotros />
+      </div>
+      <div>
+        <VentanaFlotante/>
       </div>
       <div >
         <Footers></Footers>

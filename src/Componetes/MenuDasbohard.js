@@ -1,7 +1,7 @@
 import "../Assest/Sidebar.css";
 import { NavLink } from "react-router-dom";
 import Icon from "@mdi/react";
-import { mdiAccount,mdiMultimedia,mdiStore,mdiBookClock,mdiPackageVariant,mdiSale,mdiBell } from "@mdi/js";
+import { mdiAccount,mdiMultimedia,mdiStore,mdiBookClock,mdiPackageVariant,mdiSale,mdiBell,mdiListBox,mdiTextBoxEditOutline } from "@mdi/js";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -49,6 +49,16 @@ function MenuDasbohard() {
           <Icon path={mdiBell} size={1} />
             <NavLink to="/dashboardNotificaciones" className="text-dark">Notificaciones</NavLink>
           </li>
+          <li>
+          <Icon path={mdiListBox} size={1} />
+            <NavLink to="/dashboardSolicitud" className="text-dark">Solicitudes</NavLink>
+          </li>
+          <li>
+          <Icon path={mdiTextBoxEditOutline} size={1} />
+            <NavLink to="/dashboardInventario" className="text-dark">Inventario</NavLink>
+          </li>
+          
+          
           
         </ul>
       </div>

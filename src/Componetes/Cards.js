@@ -38,6 +38,7 @@ function Cards() {
   return (
     <CardGroup>
         {data.map((gestor)=>(
+    
            gestor.foto && ( 
       <Card>
         <Card.Img variant="top" src={gestor.foto} />

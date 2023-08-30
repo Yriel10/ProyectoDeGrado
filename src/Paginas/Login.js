@@ -139,8 +139,9 @@ function Login(props) {
 
           <div className="text-center">
             <p>
+              <br/>
               ¿No estas registrado?{" "}
-              <button onClick={() => abrirCerrarModalInsertar()}>
+              <button className="btn btn-outline-primary" onClick={() => abrirCerrarModalInsertar()}>
                 Registrarse
               </button>
             </p>

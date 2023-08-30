@@ -1,6 +1,6 @@
 import React from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import 'react-bootstrap'
 import { useState } from "react";
 import { useEffect, useContext } from "react";
@@ -8,13 +8,14 @@ import Cookies from "universal-cookie"
 import axios from "axios";
 import { DataContext } from "../context/Dataprovider";
 import Menu from "../Componetes/Menu2";
+import { useNavigate } from "react-router-dom";
 
 
 const stripePromise = loadStripe(
   "pk_test_51NdQwhK5dimFIS68dRSAh9fs2t7uGmuU3wwQr5QgHS80YkY8sll0kbt4TraeVxHsu5N6ljKyX71PUIspbBIfj2YF00n0rI48wh"
 );
 const CheckoutForm = ({ cartTotal }) => {
-
+const Navigate=useNavigate();
 console.log(cartTotal)
     const element= useElements();
     const stripe = useStripe();
@@ -32,10 +33,13 @@ if (!error){
   try {
     const response = await axios.post("https://localhost:7151/api/PagoLinea", {
       id,
-      amount: cartTotal 
+      amount: cartTotal *100
     });
 
     console.log(response.data);
+    alert("pago completado");
+    Navigate("/facturacion")
+
   } catch (error) {
     console.error("Error al realizar el pago:", error);
   }

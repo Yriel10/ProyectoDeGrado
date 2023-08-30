@@ -5,7 +5,14 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import Footers from "../Componetes/Footers";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
-
+import TableContainer from "@mui/material/TableContainer"; // Import de Material-UI
+import Table from "@mui/material/Table"; // Import de Material-UI
+import TableBody from "@mui/material/TableBody"; // Import de Material-UI
+import TableCell from "@mui/material/TableCell"; // Import de Material-UI
+import TableHead from "@mui/material/TableHead"; // Import de Material-UI
+import TableRow from "@mui/material/TableRow"; // Import de Material-UI
+import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
+import Paper from "@mui/material/Paper"; // Import de Material-UI
 
 export default function DashboardMultimedia() {
   const baseUrl = "https://localhost:7151/api/multimedias";
@@ -14,6 +21,8 @@ export default function DashboardMultimedia() {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -89,7 +98,7 @@ export default function DashboardMultimedia() {
     await axios
       .delete(baseUrl + "/" + gestorSeleccionado.id)
       .then(() => {
-        setData(data.filter(gestor => gestor.id !== gestorSeleccionado.id));
+        setData(data.filter((gestor) => gestor.id !== gestorSeleccionado.id));
         abrirCerrarModalEliminar();
       })
       .catch((error) => {
@@ -104,6 +113,20 @@ export default function DashboardMultimedia() {
       abrirCerrarModalEliminar();
     }
   };
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
+
+  useEffect(() => {
+    peticionesGet();
+  }, []);
+
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };
@@ -131,51 +154,68 @@ export default function DashboardMultimedia() {
             <br />
             <br />
             <button
-              onClick={() => abrirCerrarModalInsertar()}
+              onClick={() => setModalInsertar(true)}
               className="btn btn-success"
             >
               Insertar nueva portada
             </button>
             <br />
             <br />
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Foto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data &&
-                  data.map((gestor) => (
-                    <tr key={gestor.id}>
-                      <td>{gestor.id}</td>
-                      <td>{gestor.nombre}</td>
-                      <td style={{ width: "250px", height: "250px" }}>
-                        {gestor.foto && (
-                          <Image
-                            publicId={gestor.foto}
-                            style={{ maxWidth: "100%", maxHeight: "100%" }}
-                          ></Image>
-                        )}
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => seleccionarGestor(gestor, "Editar")}
-                        >
-                          Editar
-                        </button>
-                        {""}
-                        <button className="btn btn-danger"
-                         onClick={() => seleccionarGestor(gestor, "Eliminar")}
-                         >Eliminar</button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <TableContainer component={Paper}>
+              <TablePagination
+                rowsPerPageOptions={[1, 5, 10]}
+                component="div"
+                count={data.length}
+                rowsPerPage={perPage}
+                page={currentPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Foto</TableCell>
+                    <TableCell>Acciones</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data
+                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                    .map((gestor) => (
+                      <TableRow key={gestor.id}>
+                        <TableCell>{gestor.id}</TableCell>
+                        <TableCell>{gestor.nombre}</TableCell>
+                        <TableCell style={{ width: "250px", height: "250px" }}>
+                          {gestor.foto && (
+                            <Image
+                              publicId={gestor.foto}
+                              style={{ maxWidth: "100%", maxHeight: "100%" }}
+                            ></Image>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => seleccionarGestor(gestor, "Editar")}
+                          >
+                            Editar
+                          </button>{" "}
+                          <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                              seleccionarGestor(gestor, "Eliminar")
+                            }
+                          >
+                            Eliminar
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </div>
         <Modal show={modalInsertar}>
@@ -277,15 +317,16 @@ export default function DashboardMultimedia() {
           </Modal>
         </div>
         <div>
-        <Modal show={modalEliminar}>
-            <ModalBody>
-              ¿Está seguro de eliminar el registro?
-            </ModalBody>
+          <Modal show={modalEliminar}>
+            <ModalBody>¿Está seguro de eliminar el registro?</ModalBody>
             <ModalFooter>
               <button className="btn btn-danger" onClick={peticionesDelete}>
                 Si
               </button>
-              <button className="btn btn-secondary" onClick={abrirCerrarModalEliminar}>
+              <button
+                className="btn btn-secondary"
+                onClick={abrirCerrarModalEliminar}
+              >
                 No
               </button>
             </ModalFooter>
@@ -293,8 +334,6 @@ export default function DashboardMultimedia() {
         </div>
         <Footers />
       </div>
-      
-
     </CloudinaryContext>
   );
 }

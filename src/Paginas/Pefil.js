@@ -24,6 +24,22 @@ export default function Pefil() {
 
   const baseUrl = "https://localhost:7151/api/usuario/" + idU;
   const [data, setData] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "SistemaFarmacia"); // Reemplaza con tu upload preset de Cloudinary
+    axios
+      .post("https://api.cloudinary.com/v1_1/dxy6tbr7v/image/upload", formData)
+      .then((response) => {
+        setImageUrl(response.data.secure_url);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const [modalEditar, setModalEditar] = useState(false);
 
@@ -119,14 +135,19 @@ export default function Pefil() {
           >
             Editar
           </button>
+       
         </div>
          )}
+       
         </div>
 
        <div>
-        <h3>Historial de compras</h3>
+        
+      
        </div>
-
+     <div>
+     <h3>Historial de compras</h3>
+      </div>
         <div>
           <Modal show={modalEditar}>
             <ModalHeader>Editar usuario</ModalHeader>

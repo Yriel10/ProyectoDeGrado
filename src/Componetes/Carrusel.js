@@ -12,14 +12,7 @@ function Carrusel() {
     nombre: "",
     foto: "",
   });
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setGestorSeleccionado({
-      ...gestorSeleccionado,
-      [name]: value,
-    });
-    console.log(gestorSeleccionado);
-  };
+ 
 
   const peticionesGet = async () => {
     await axios

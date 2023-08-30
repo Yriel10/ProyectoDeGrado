@@ -1,8 +1,7 @@
 import React from 'react';
-import {MDBFooter,MDBContainer,MDBBtn} from 'mdb-react-ui-kit';
+import {MDBFooter,MDBContainer} from 'mdb-react-ui-kit';
 import Icon from '@mdi/react';
 import { mdiFacebook,mdiInstagram,mdiTwitter  } from '@mdi/js';
-import { Link } from 'react-router-dom';
 
  function Footers() {
   return (

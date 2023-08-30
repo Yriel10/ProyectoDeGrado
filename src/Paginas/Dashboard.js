@@ -3,16 +3,24 @@ import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import Footers from "../Componetes/Footers";
+import { Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
-import { Image } from "cloudinary-react";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
+import Paper from "@mui/material/Paper";
 
 export default function Dashboard() {
-
-
   const baseUrl = "https://localhost:7151/api/usuario";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
 
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idUsuario: "",
@@ -21,7 +29,7 @@ export default function Dashboard() {
     correo: "",
     contrasena: "",
     rol: "Usuario",
-    fotoPerfil:""
+    fotoPerfil: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,6 +98,14 @@ export default function Dashboard() {
   useEffect(() => {
     peticionesGet();
   }, []);
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
@@ -99,7 +115,6 @@ export default function Dashboard() {
       </div>
       <div className="flex">
         <MenuDasbohard />
-
         <div className="content">
           <br />
           <br />
@@ -111,50 +126,66 @@ export default function Dashboard() {
           </button>
           <br />
           <br />
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Foto</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data &&
-                data.map((gestor) => (
-                  <tr key={gestor.idUsuario}>
-                    <td>{gestor.idUsuario}</td>
-                    <td>{gestor.nombres}</td>
-                    <td>{gestor.apellidos}</td>
-                    <td>{gestor.correo}</td>
-                    <td>{gestor.rol}</td>
-                    <td style={{ width: "250px", height: "250px" }}>
+          <TableContainer component={Paper}>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data.length}
+              rowsPerPage={perPage}
+              page={currentPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+            />
+
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Apellido</TableCell>
+                  <TableCell>Correo</TableCell>
+                  <TableCell>Rol</TableCell>
+                  <TableCell>Foto</TableCell>
+                  <TableCell>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data
+                  .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                  .map((gestor) => (
+                    <TableRow key={gestor.idUsuario}>
+                      <TableCell>{gestor.idUsuario}</TableCell>
+                      <TableCell>{gestor.nombres}</TableCell>
+                      <TableCell>{gestor.apellidos}</TableCell>
+                      <TableCell>{gestor.correo}</TableCell>
+                      <TableCell>{gestor.rol}</TableCell>
+                      <TableCell style={{ width: "250px", height: "250px" }}>
                         {gestor.fotoPerfil && (
                           <Image
-                          cloudName="dxy6tbr7v"
+                            cloudName="dxy6tbr7v"
                             publicId={gestor.fotoPerfil}
                             style={{ maxWidth: "100%", maxHeight: "100%" }}
-                          ></Image>
-                        )}</td>
-                    <td>
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => seleccionarGestor(gestor, "Editar")}
-                      >
-                        Editar
-                      </button>
-                      {""}
-                      <button className="btn btn-danger">Eliminar</button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                          >
+                            <Transformation width="50" crop="scale" />
+                          </Image>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => seleccionarGestor(gestor, "Editar")}
+                        >
+                          Editar
+                        </button>
+                        <button className="btn btn-danger">Eliminar</button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
+
         <Modal show={modalInsertar}>
           <ModalHeader>Insertar nuevo usuario</ModalHeader>
           <ModalBody>
@@ -223,7 +254,7 @@ export default function Dashboard() {
                 <input
                   type="texto"
                   className="form-control "
-                  name="nombres"
+                  name="idUsuario"
                   readOnly
                   value={gestorSeleccionado && gestorSeleccionado.idUsuario}
                 />
@@ -271,7 +302,7 @@ export default function Dashboard() {
                 <label>Rol</label>
                 <br />
                 <input
-                  type="tecto"
+                  type="texto"
                   className="form-control"
                   name="rol"
                   onChange={handleChange}
