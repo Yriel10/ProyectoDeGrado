@@ -23,12 +23,13 @@ export default function DashboardMultimedia() {
   const [imageUrl, setImageUrl] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "SistemaFarmacia"); // Reemplaza con tu upload preset de Cloudinary
+    formData.append("upload_preset", "SistemaFarmacia");
     axios
       .post("https://api.cloudinary.com/v1_1/dxy6tbr7v/image/upload", formData)
       .then((response) => {
@@ -56,12 +57,20 @@ export default function DashboardMultimedia() {
     await axios
       .get(baseUrl)
       .then((response) => {
-        setData(response.data);
+        const datosFiltrados = filtrarDatos(response.data, filtro);
+        setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter((dato) =>
+      dato.nombre.toLowerCase().includes(consulta.toLowerCase())
+    );
+  };
+
   const peticionesPost = async () => {
     delete gestorSeleccionado.id;
     gestorSeleccionado.foto = imageUrl;
@@ -125,7 +134,7 @@ export default function DashboardMultimedia() {
 
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
 
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
@@ -136,9 +145,6 @@ export default function DashboardMultimedia() {
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
-  useEffect(() => {
-    peticionesGet();
-  }, []);
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
@@ -161,6 +167,14 @@ export default function DashboardMultimedia() {
             </button>
             <br />
             <br />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar por nombre..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+            />
+
             <TableContainer component={Paper}>
               <TablePagination
                 rowsPerPageOptions={[1, 5, 10]}
@@ -174,10 +188,18 @@ export default function DashboardMultimedia() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Nombre</TableCell>
-                    <TableCell>Foto</TableCell>
-                    <TableCell>Acciones</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      ID
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Nombre
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Foto
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Acciones
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

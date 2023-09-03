@@ -4,13 +4,22 @@ import axios from "axios";
 import Footers from "../Componetes/Footers";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
-
+import TableContainer from "@mui/material/TableContainer"; // Import de Material-UI
+import Table from "@mui/material/Table"; // Import de Material-UI
+import TableBody from "@mui/material/TableBody"; // Import de Material-UI
+import TableCell from "@mui/material/TableCell"; // Import de Material-UI
+import TableHead from "@mui/material/TableHead"; // Import de Material-UI
+import TableRow from "@mui/material/TableRow"; // Import de Material-UI
+import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
+import Paper from "@mui/material/Paper";
 
 export default function DashboardNotificaciones() {
   const baseUrl = "https://localhost:7151/api/notificaciones";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     descripcion: "",
     correo: "",
@@ -43,16 +52,29 @@ export default function DashboardNotificaciones() {
     await axios
       .get(baseUrl)
       .then((response) => {
-        setData(response.data);
+        const datosFiltrados = filtrarDatos(response.data, filtro);
+        setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
         console.log(error);
       });
   };
- 
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter((dato) =>
+      dato.correo.toLowerCase().includes(consulta.toLowerCase())
+    );
+  };
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
   return (
     <div><div>
     <div>
@@ -71,29 +93,47 @@ export default function DashboardNotificaciones() {
               Enviar Notificacion
             </button>
         <br />
+
         <br />
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Correo</th>
-              <th>Mensaje</th>
+        <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar por correo..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+            />
+        <TableContainer component={Paper}>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={data.length}
+                rowsPerPage={perPage}
+                page={currentPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+              <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>ID</TableCell>
+              <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Correo</TableCell>
+              <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Mensaje</TableCell>
 
-            </tr>
-          </thead>
-          <tbody>
-            {data &&
-              data.map((gestor) => (
-                <tr key={gestor.idNotificaciones}>
-                  <td>{gestor.idNotificaciones}</td>
-                  <td>{gestor.correo}</td>
-                  <td>{gestor.descripcion}</td>
-
-           
-                </tr>
-              ))}
-          </tbody>
-        </table>
+              </TableRow>
+                </TableHead>
+                <TableBody>
+                {data
+                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                    .map((gestor) => (
+                <TableRow key={gestor.idNotificaciones}>
+                  <TableCell >{gestor.idNotificaciones}</TableCell>
+                  <TableCell >{gestor.correo}</TableCell>
+                  <TableCell >{gestor.descripcion}</TableCell>
+                  </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+                </TableContainer>
       </div>
       </div>
   <div>

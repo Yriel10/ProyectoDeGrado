@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [modalEditar, setModalEditar] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
 
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idUsuario: "",
@@ -44,12 +45,21 @@ export default function Dashboard() {
     await axios
       .get(baseUrl)
       .then((response) => {
-        setData(response.data);
+        const datosFiltrados = filtrarDatos(response.data, filtro);
+        console.log(datosFiltrados); // Agrega esto para depurar
+        setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter((dato) =>
+      dato.nombres.toLowerCase().includes(consulta.toLowerCase())
+    );
+  };
+
   const peticionesPost = async () => {
     delete gestorSeleccionado.idUsuario;
     await axios
@@ -85,6 +95,7 @@ export default function Dashboard() {
         console.log(error);
       });
   };
+
   const seleccionarGestor = (gestor, caso) => {
     setGestorSeleccionado(gestor);
     caso === "Editar" && abrirCerrarModalEditar();
@@ -97,7 +108,7 @@ export default function Dashboard() {
   };
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
   };
@@ -125,7 +136,16 @@ export default function Dashboard() {
             Insertar nuevo usuario
           </button>
           <br />
+
           <br />
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Buscar por nombre..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
+
           <TableContainer component={Paper}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
@@ -140,13 +160,27 @@ export default function Dashboard() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Apellido</TableCell>
-                  <TableCell>Correo</TableCell>
-                  <TableCell>Rol</TableCell>
-                  <TableCell>Foto</TableCell>
-                  <TableCell>Acciones</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    ID
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Nombre
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Apellido
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Correo
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Rol
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Foto
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Acciones
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

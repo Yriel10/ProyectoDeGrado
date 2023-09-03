@@ -16,20 +16,21 @@ export default function Facturacion() {
   const carrito = JSON.parse(localStorage.getItem("dataCarrito"));
   const total = JSON.parse(localStorage.getItem("cartTotal"));
   const fechaActual = new Date();
-  const formattedDate = `${fechaActual.getDate()}/${
-    fechaActual.getMonth() + 1
-  }/${fechaActual.getFullYear()}`;
+  const day = fechaActual.getDate();
+  const month = fechaActual.getMonth() + 1;
+  const year = fechaActual.getFullYear();
+  const formattedDate = `${day < 10 ? "0" : ""}${day}/${
+    month < 10 ? "0" : ""
+  }${month}/${year}`;
   const urlFactura = "https://localhost:7151/api/facturas"; //
   const urlDetalle = "https://localhost:7151/api/detalles"; //
   const baseUrl = "https://localhost:7151/api/pedidos";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
 
-
   const [facturaCreated, setFacturaCreated] = useState(false);
   const [idFactura, setIdFactura] = useState(null);
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
-
     nombre: "",
     lugarEntrega: "",
     estado: "incompleto",
@@ -87,15 +88,15 @@ export default function Facturacion() {
     if (idFactura !== null) {
       // Convierte idFactura en una cadena (string)
       const idFacturaString = idFactura.toString();
-  
+
       // Agrega idFactura al objeto gestorSeleccionado
       gestorSeleccionado.idFactura = idFacturaString;
-    
+
       try {
         await axios
-    
+
           .post(baseUrl, gestorSeleccionado)
-         
+
           .then((response) => {
             setData(data.concat(response.data));
             abrirCerrarModalInsertar();
@@ -110,8 +111,7 @@ export default function Facturacion() {
       console.error("idFactura es nulo o inválido.");
     }
   };
-  
-  
+
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };

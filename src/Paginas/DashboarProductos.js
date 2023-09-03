@@ -6,6 +6,14 @@ import Footers from "../Componetes/Footers";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import "../Assest/Sidebar.css";
+import TableContainer from "@mui/material/TableContainer"; // Import de Material-UI
+import Table from "@mui/material/Table"; // Import de Material-UI
+import TableBody from "@mui/material/TableBody"; // Import de Material-UI
+import TableCell from "@mui/material/TableCell"; // Import de Material-UI
+import TableHead from "@mui/material/TableHead"; // Import de Material-UI
+import TableRow from "@mui/material/TableRow"; // Import de Material-UI
+import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
+import Paper from "@mui/material/Paper";
 
 export default function DashboardProductos() {
   const baseUrl = "https://localhost:7151/api/medicamento";
@@ -13,6 +21,9 @@ export default function DashboardProductos() {
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -52,11 +63,17 @@ export default function DashboardProductos() {
     await axios
       .get(baseUrl)
       .then((response) => {
-        setData(response.data);
+        const datosFiltrados = filtrarDatos(response.data, filtro);
+        setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter((dato) =>
+      dato.nombre.toLowerCase().includes(consulta.toLowerCase())
+    );
   };
   const peticionesPost = async () => {
     if (!imageUrl) {
@@ -125,9 +142,18 @@ export default function DashboardProductos() {
   const abrirCerrarModalEditar = () => {
     setModalEditar(!modalEditar);
   };
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
+
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
@@ -150,54 +176,100 @@ export default function DashboardProductos() {
             </button>
             <br />
             <br />
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Fabricante</th>
-                  <th>Precio</th>
-                  <th>categoria</th>
-                  <th> Cantidad</th>
-                  <th> Codigo</th>
-                  <th>Receta</th>
-                  <th> Foto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data &&
-                  data.map((gestor) => (
-                    <tr key={gestor.idMedicamento}>
-                      <td>{gestor.idMedicamento}</td>
-                      <td>{gestor.nombre}</td>
-                      <td>{gestor.nombreFabricante}</td>
-                      <td>{gestor.precio}</td>
-                      <td>{gestor.categoria}</td>
-                      <td>{gestor.cantidad}</td>
-                      <td>{gestor.codigo}</td>
-                      <td>{gestor.tipoMedicamento ? "Si" : "No"}</td>
-                      <td style={{ width: "250px", height: "250px" }}>
-                        {gestor.foto && (
-                          <Image
-                            publicId={gestor.foto}
-                            style={{ maxWidth: "100%", maxHeight: "100%" }}
-                          ></Image>
-                        )}
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => seleccionarGestor(gestor, "Editar")}
-                        >
-                          Editar
-                        </button>
-                        {""}
-                        <button className="btn btn-danger">Eliminar</button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar por nombre..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+            />
+            <TableContainer component={Paper}>
+              <TablePagination
+                rowsPerPageOptions={[1, 5, 10]}
+                component="div"
+                count={data.length}
+                rowsPerPage={perPage}
+                page={currentPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      ID
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Nombre
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Fabricante
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Precio
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      categoria
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Cantidad
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Codigo
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Receta
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Foto
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Acciones
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data
+                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                    .map((gestor) => (
+                      <TableRow key={gestor.idMedicamento}>
+                        <TableCell>{gestor.idMedicamento}</TableCell>
+                        <TableCell>{gestor.nombre}</TableCell>
+                        <TableCell>{gestor.nombreFabricante}</TableCell>
+                        <TableCell>{gestor.precio}</TableCell>
+                        <TableCell>{gestor.categoria}</TableCell>
+                        <TableCell>{gestor.cantidad}</TableCell>
+                        <TableCell>{gestor.codigo}</TableCell>
+                        <TableCell>
+                          {gestor.tipoMedicamento ? "Si" : "No"}
+                        </TableCell>
+                        <TableCell style={{ width: "250px", height: "250px" }}>
+                          {gestor.foto && (
+                            <Image
+                              publicId={gestor.foto}
+                              style={{ maxWidth: "100%", maxHeight: "100%" }}
+                            ></Image>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => seleccionarGestor(gestor, "Editar")}
+                          >
+                            Editar
+                          </button>
+                          {""}
+                          <button className="btn btn-danger">Eliminar</button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </div>
         <Modal show={modalInsertar}>

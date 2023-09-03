@@ -4,11 +4,15 @@ import Menu from "../Componetes/Menu2";
 import Footers from "../Componetes/Footers";
 import { DataContext } from "../context/Dataprovider";
 import { Productos } from "../Componetes/Productos";
+import { useLocation } from "react-router-dom";
+
 
 export default function Tienda() {
   const value = useContext(DataContext);
   const productos = value.productos;
-
+  const { state } = useLocation();
+  const productosFiltrados = state ? state.productos : value.productos;
+  
 
   return (
     <>
@@ -17,7 +21,7 @@ export default function Tienda() {
       </div>
       <h1 className="title">Productos</h1>
       <div className="productos">
-        {productos.map((producto) => (
+        {productosFiltrados.map((producto) => (
           <Productos
             key={producto.idMedicamento}
             idMedicamento={producto.idMedicamento}

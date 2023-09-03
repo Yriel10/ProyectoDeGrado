@@ -3,11 +3,13 @@ import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import Footers from "../Componetes/Footers";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
+import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 
 export default function DashboardSolicitud() {
   const baseUrl = "https://localhost:7151/api/solicitud";
   const [data, setData] = useState([]);
- 
+  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null); // Estado para almacenar la información del usuario
 
   const peticionesGet = async () => {
     await axios
@@ -22,11 +24,13 @@ export default function DashboardSolicitud() {
 
   const peticionesPut = async (solicitud) => {
     try {
-      solicitud.estado = 'Completo'; // Asegúrate de establecer el estado en "completo" aquí
-  
-      const response = await axios.put(baseUrl + "/" + solicitud.idSolicitud, solicitud);
+      solicitud.estado = "Completo"; // Asegúrate de establecer el estado en "completo" aquí
+
+      const response = await axios.put(
+        baseUrl + "/" + solicitud.idSolicitud,
+        solicitud
+      );
       if (response.status === 200) {
-       
       } else {
         console.error("Error al actualizar la solicitud.");
       }
@@ -38,11 +42,14 @@ export default function DashboardSolicitud() {
 
   const peticionesPutincompleto = async (solicitud) => {
     try {
-      solicitud.estado = 'Incompleto'; // Asegúrate de establecer el estado en "completo" aquí
-  
-      const response = await axios.put(baseUrl + "/" + solicitud.idSolicitud, solicitud);
+      solicitud.estado = "Incompleto"; // Asegúrate de establecer el estado en "completo" aquí
+
+      const response = await axios.put(
+        baseUrl + "/" + solicitud.idSolicitud,
+        solicitud
+      );
       if (response.status === 200) {
-       peticionesGet();
+        peticionesGet();
       } else {
         console.error("Error al actualizar la solicitud.");
       }
@@ -51,9 +58,23 @@ export default function DashboardSolicitud() {
     }
     peticionesGet();
   };
-  
-  
-  
+  const mostrarModalCliente = async (gestor) => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7151/api/usuario/${gestor.idUsuario}`
+      );
+
+      if (response.status === 200) {
+        console.log(response.data); // Depura la respuesta
+        setUsuarioSeleccionado(response.data); // Almacena el objeto de usuario
+        setModalVisible(true); // Muestra el modal
+      } else {
+        console.error("Error al obtener los detalles de la usuario");
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
+    }
+  };
 
   useEffect(() => {
     peticionesGet();
@@ -80,7 +101,6 @@ export default function DashboardSolicitud() {
                   <th>Descripción</th>
                   <th>Estado</th>
                   <th>Id Usuario</th>
-               
                 </tr>
               </thead>
               <tbody>
@@ -93,6 +113,12 @@ export default function DashboardSolicitud() {
                       <td>{gestor.estado}</td>
                       <td>{gestor.idUsuario}</td>'
                       <td>
+                        <button
+                          className="btn btn-success"
+                          onClick={() => mostrarModalCliente(gestor)}
+                        >
+                          Ver Usuario
+                        </button>
                         <button
                           className="btn btn-primary"
                           onClick={() => peticionesPut(gestor)}
@@ -114,6 +140,38 @@ export default function DashboardSolicitud() {
         </div>
 
         <Footers />
+
+        {/* Modal para mostrar la información de la usuario */}
+        <Modal show={modalVisible} onHide={() => setModalVisible(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Detalles del usuario</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {usuarioSeleccionado && (
+              <div>
+                <p>
+                  ID de usuario: {usuarioSeleccionado.idUsuario}
+                  <br />
+                  Nombre: {usuarioSeleccionado.nombres}
+                  <br />
+                  Apellido: {usuarioSeleccionado.apellidos}
+                  <br />
+                  Correo: {usuarioSeleccionado.correo}
+                  <br />
+                </p>
+              </div>
+            )}
+          </Modal.Body>
+
+          <Modal.Footer>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setModalVisible(false)}
+            >
+              Cerrar
+            </button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
