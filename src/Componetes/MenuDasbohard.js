@@ -13,7 +13,7 @@ function MenuDasbohard() {
   const roles= cookies.get('rol');
 
   useEffect(() => {
-    if (roles !== "Administrador") {
+    if (roles === "Usuario" || roles === "Cliente" ||roles=== undefined) {
       navigate("/"); 
     }
   }, [roles, navigate]);

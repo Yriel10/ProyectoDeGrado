@@ -111,7 +111,26 @@ export default function Facturacion() {
       console.error("idFactura es nulo o inválido.");
     }
   };
+  const updateMedicamentoCantidad = async (nombreProducto, cantidad) => {
+    try {
+      const response = await axios.put(`https://localhost:7151/api/Medicamento/ActualizarCantidad?nombreProducto=${nombreProducto}&cantidad=${cantidad}`);
 
+
+        if (response.status === 204) {
+            console.log(`Cantidad de ${nombreProducto} actualizada correctamente.`);
+        } else if (response.status === 400) {
+            console.error(`Error al actualizar la cantidad de ${nombreProducto}: Cantidad inválida.`);
+        } else if (response.status === 404) {
+            console.error(`Error al actualizar la cantidad de ${nombreProducto}: Medicamento no encontrado.`);
+        } else {
+            console.error(`Error al actualizar la cantidad de ${nombreProducto}.`);
+        }
+    } catch (error) {
+        console.error(`Error al actualizar la cantidad de ${nombreProducto}:`, error);
+    }
+};
+
+  
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };
@@ -133,8 +152,14 @@ export default function Facturacion() {
   useEffect(() => {
     if (facturaCreated && idFactura) {
       createDetalles(); // Crea los detalles de la factura
+  
+      // Actualiza la cantidad de medicamentos en la tabla Medicamento
+      for (const item of carrito) {
+        updateMedicamentoCantidad(item.nombre, item.cantidad);
+      }
     }
   }, [facturaCreated, idFactura]);
+  
   return (
     <div>
       <div>

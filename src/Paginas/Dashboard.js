@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
@@ -13,6 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
+import { useReactToPrint } from "react-to-print";
 
 export default function Dashboard() {
   const baseUrl = "https://localhost:7151/api/usuario";
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage, setPerPage] = useState(5);
   const [filtro, setFiltro] = useState("");
-
+  const componentRef = useRef();
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idUsuario: "",
     nombres: "",
@@ -41,6 +42,11 @@ export default function Dashboard() {
     console.log(gestorSeleccionado);
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "emp-data",
+    onAfterPrint: () => alert("Print Success"),
+  });
   const peticionesGet = async () => {
     await axios
       .get(baseUrl)
@@ -120,7 +126,7 @@ export default function Dashboard() {
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
-    <div>
+    <div >
       <div>
         <Menu />
       </div>
@@ -136,7 +142,7 @@ export default function Dashboard() {
             Insertar nuevo usuario
           </button>
           <br />
-
+          <button className="btn btn-primary" onClick={handlePrint}>Imprimir</button>
           <br />
           <input
             type="text"
@@ -146,7 +152,7 @@ export default function Dashboard() {
             onChange={(e) => setFiltro(e.target.value)}
           />
 
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} ref={componentRef}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"

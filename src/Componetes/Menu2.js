@@ -134,7 +134,7 @@ function Menu(props) {
                     Logout
                   </NavDropdown.Item>
                 )}
-                {rol === "Administrador" ? (
+                {rol === "Administrador" || rol=== "Cajero" ? (
                   <NavDropdown.Item href="/dashboard">
                     Dashboard
                   </NavDropdown.Item>
