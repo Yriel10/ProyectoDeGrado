@@ -99,8 +99,10 @@ export default function DashboardSolicitud() {
                   <th>ID</th>
                   <th>Correo</th>
                   <th>Descripción</th>
+                  <th>Receta</th>
+                   <th>Id Usuario</th>
                   <th>Estado</th>
-                  <th>Id Usuario</th>
+                 
                 </tr>
               </thead>
               <tbody>
@@ -110,8 +112,9 @@ export default function DashboardSolicitud() {
                       <td>{gestor.idSolicitud}</td>
                       <td>{gestor.correo}</td>
                       <td>{gestor.descripcion}</td>
-                      <td>{gestor.estado}</td>
-                      <td>{gestor.idUsuario}</td>'
+                      <td>{gestor.receta}</td>
+                      <td>{gestor.idUsuario}</td>
+                       <td>{gestor.estado}</td>
                       <td>
                         <button
                           className="btn btn-success"

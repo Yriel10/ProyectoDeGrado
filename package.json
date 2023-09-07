@@ -42,6 +42,7 @@
     "react-to-print": "^2.14.13",
     "stripe": "^12.18.0",
     "styled-components": "^5.3.10",
+    "sweetalert": "^2.1.2",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"
   },

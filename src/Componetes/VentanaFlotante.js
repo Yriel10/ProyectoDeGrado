@@ -7,7 +7,6 @@ import axios from "axios";
 
 export default function VentanaFlotante() {
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
-    idAsistencia: "",
     nombre: "",
     estado: "no atendido",
     numeroTelefono: "",
@@ -21,7 +20,7 @@ export default function VentanaFlotante() {
     });
   };
 
-  const baseUrl = "https://localhost:7151/api/pedidos";
+  const baseUrl = "https://localhost:7151/api/asistencias";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
 
@@ -61,7 +60,7 @@ export default function VentanaFlotante() {
               <input
                 type="text"
                 className="form-control"
-                name="lugarEntrega"
+                name="nombre"
                 onChange={handleChange}
               />
               <br />
@@ -70,7 +69,7 @@ export default function VentanaFlotante() {
               <input
                 type="text"
                 className="form-control"
-                name="nombre"
+                name="numeroTelefono"
                 onChange={handleChange}
               />
               <br />

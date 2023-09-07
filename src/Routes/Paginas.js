@@ -17,6 +17,7 @@ import DashboardPedidos from '../Paginas/DashboardPedidos';
 import Facturacion from '../Paginas/Facturacion';
 import DashboardSolicitud from '../Paginas/DashboradSolicitud';
 import DashboardInventario from '../Paginas/DashboardInventario';
+import DashboardAsistencia from '../Paginas/DashboardAsistencia';
 
 
 export const  Paginas = ( ) => {
@@ -38,9 +39,9 @@ export const  Paginas = ( ) => {
    <Route path='/dashboardNotificaciones' element={<DashboardNotificaciones/>}/>
    <Route path='/pago' element={<Checkout />}/>
    <Route path='/perfil' element={<Pefil />}/>
-   <Route path='/facturacion' element={<Facturacion />
-   }/>
-    <Route path='/dashboardInventario' element={<DashboardInventario />
+   <Route path='/facturacion' element={<Facturacion />}/>
+    <Route path='/dashboardInventario' element={<DashboardInventario />}/>
+    <Route path='/dashboardAsistencia' element={<DashboardAsistencia />
    }/>
     </Routes>
     </BrowserRouter>

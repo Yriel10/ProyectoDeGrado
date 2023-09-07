@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
 import Footers from "../Componetes/Footers";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
+import swal from "sweetalert";
 
 function Login(props) {
   const baseUrl = "https://localhost:7151/api/usuario";
@@ -49,7 +50,7 @@ function Login(props) {
         gestorSeleccionado.correo.trim() === "" ||
         gestorSeleccionado.contrasena.trim() === ""
       ) {
-        alert("Por favor, complete todos los campos del formulario");
+        swal("Por favor, complete todos los campos del formulario");
         return;
       }
       delete gestorSeleccionado.idUsuario;
@@ -71,17 +72,22 @@ function Login(props) {
       );
       const usuario = response.data[0];
       if (usuario) {
-        cookies.set("id", usuario.idUsuario, { path: "/" });
+        cookies.set("id", usuario.idUsuario, { path: "/" },{path: "/tienda"});
         cookies.set("nombres", usuario.nombres, { path: "/" });
         cookies.set("apellidos", usuario.apellidos, { path: "/" });
         cookies.set("correo", usuario.correo, { path: "/" });
         cookies.set("contrasena", usuario.contrasena, { path: "/" });
         cookies.set("rol", usuario.rol, { path: "/" });
         cookies.set("fotoPerfil", usuario.fotoPefil, { path: "/" });
-        alert("Bienvenido:" + usuario.nombres + " " + usuario.apellidos);
+        swal({
+          title:"Bienvenido:" ,
+          text: usuario.nombres + " " + usuario.apellidos,
+          icon:"success",
+          button:"Aceptar"
+        });
         navigate("/");
       } else {
-        alert("El usuario o la contraseña son incorrectos");
+        swal("El usuario o la contraseña son incorrectos");
       }
     } catch (error) {
       console.log(error);

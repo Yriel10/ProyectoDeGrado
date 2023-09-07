@@ -14,6 +14,7 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import { useReactToPrint } from "react-to-print";
+import swal from "sweetalert";
 
 export default function Dashboard() {
   const baseUrl = "https://localhost:7151/api/usuario";
@@ -45,7 +46,7 @@ export default function Dashboard() {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: "emp-data",
-    onAfterPrint: () => alert("Print Success"),
+    onAfterPrint: () => swal("Print Success"),
   });
   const peticionesGet = async () => {
     await axios
@@ -61,9 +62,50 @@ export default function Dashboard() {
   };
 
   const filtrarDatos = (datos, consulta) => {
-    return datos.filter((dato) =>
-      dato.nombres.toLowerCase().includes(consulta.toLowerCase())
+    return datos.filter(
+      (dato) =>
+        dato.nombres.toLowerCase().includes(consulta.toLowerCase()) &&
+        dato.estado !== "Eliminado"
     );
+  };
+
+  const confirmarEliminacion= async(usuario) =>{
+    swal({
+      title:"Eliminar" ,
+      text: '¿Estas seguro que deseas eliminar el usuario?',
+      icon:"warning",
+      buttons:["No","Si"]
+    }).then(respuesta=>{
+      if(respuesta){
+        swal({text:"Se a eliminado",
+      icon:"success"})
+      peticionesPutEliminar(usuario);
+      }else{
+        swal({text:"Se cancelo",
+      icon:"error"})
+      }
+
+    })
+
+  }
+  const peticionesPutEliminar = async (usuario) => {
+    
+    try {
+      usuario.estado = "Eliminado"; // Asegúrate de establecer el estado en "Eliminar" aquí
+
+      const response = await axios.put(
+        baseUrl + "/" + usuario.idUsuario,
+        usuario
+      );
+      if (response.status === 200) {
+        peticionesGet();
+      } else {
+        console.error("Error al actualizar la solicitud.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar la solicitud:", error);
+    }
+    peticionesGet();
   };
 
   const peticionesPost = async () => {
@@ -126,7 +168,7 @@ export default function Dashboard() {
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
-    <div >
+    <div>
       <div>
         <Menu />
       </div>
@@ -142,7 +184,9 @@ export default function Dashboard() {
             Insertar nuevo usuario
           </button>
           <br />
-          <button className="btn btn-primary" onClick={handlePrint}>Imprimir</button>
+          <button className="btn btn-primary" onClick={handlePrint}>
+            Imprimir
+          </button>
           <br />
           <input
             type="text"
@@ -217,7 +261,12 @@ export default function Dashboard() {
                         >
                           Editar
                         </button>
-                        <button className="btn btn-danger">Eliminar</button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => confirmarEliminacion(gestor)}
+                        >
+                          Eliminar
+                        </button>
                       </TableCell>
                     </TableRow>
                   ))}

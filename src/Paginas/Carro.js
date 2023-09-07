@@ -10,6 +10,7 @@ import "../Assest/carro.css";
 import { DataContext } from "../context/Dataprovider";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 export const Carro = (props) => {
   const value = useContext(DataContext);
@@ -91,7 +92,15 @@ export const Carro = (props) => {
   };
 
   const removeProducto = (idMedicamento) => {
-    if (window.confirm("¿Quieres eliminar este artículo?")) {
+    swal({
+      title:"Eliminar" ,
+      text: '¿Quieres eliminar este articulo?',
+      icon:"warning",
+      buttons:["No","Si"]
+    }).then(respuesta=>{
+      if(respuesta){
+        swal({text:"Se a eliminado",
+      icon:"success"})
       setCarrito(
         carrito.filter((item) => item.idMedicamento !== idMedicamento)
       );
@@ -100,6 +109,10 @@ export const Carro = (props) => {
         [idMedicamento]: 1, // Reiniciar la cantidad a 1 después de eliminar del carrito
       });
     }
+
+  })
+  
+
   };
   return (
     <div className={show1}>

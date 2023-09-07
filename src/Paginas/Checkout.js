@@ -9,6 +9,7 @@ import axios from "axios";
 import { DataContext } from "../context/Dataprovider";
 import Menu from "../Componetes/Menu2";
 import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 
 const stripePromise = loadStripe(
@@ -37,7 +38,12 @@ if (!error){
     });
 
     console.log(response.data);
-    alert("pago completado");
+    swal({
+      title:"Pago completado" ,
+      text: 'El proceso de pago procedio de forma satisfactoria',
+      icon:"success",
+      button:"Aceptar"
+    });
     Navigate("/facturacion")
 
   } catch (error) {

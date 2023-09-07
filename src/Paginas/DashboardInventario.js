@@ -6,38 +6,35 @@ import Footers from "../Componetes/Footers";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import "../Assest/Sidebar.css";
+import TableContainer from "@mui/material/TableContainer"; // Import de Material-UI
+import Table from "@mui/material/Table"; // Import de Material-UI
+import TableBody from "@mui/material/TableBody"; // Import de Material-UI
+import TableCell from "@mui/material/TableCell"; // Import de Material-UI
+import TableHead from "@mui/material/TableHead"; // Import de Material-UI
+import TableRow from "@mui/material/TableRow"; // Import de Material-UI
+import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
+import Paper from "@mui/material/Paper";
 
 export default function DashboardInventario() {
-  const baseUrl = "https://localhost:7151/api/medicamento";
+  const baseUrl = "https://localhost:7151/api/inventarios";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "SistemaFarmacia"); // Reemplaza con tu upload preset de Cloudinary
-    axios
-      .post("https://api.cloudinary.com/v1_1/dxy6tbr7v/image/upload", formData)
-      .then((response) => {
-        setImageUrl(response.data.secure_url);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
-    idMedicamento: "",
-    nombre: "",
-    foto: "",
-    nombreFabricante: "",
-    precio: "",
-    categoria: "",
-    cantidad: "",
+    idInventario: "",
+    nombreProducto:"",
+    fabricante: "",
+    fechaEntrada: "",
+    fechaVencimiento: "",
+    cantidadEntregada: "",
     codigo: "",
-    tipoMedicamento: "",
+    estado:"Activo"
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,29 +49,29 @@ export default function DashboardInventario() {
     await axios
       .get(baseUrl)
       .then((response) => {
-        setData(response.data);
+        const datosFiltrados = filtrarDatos(response.data, filtro);
+        setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
         console.log(error);
       });
   };
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter((dato) =>
+      dato.nombreProducto.toLowerCase().includes(consulta.toLowerCase())
+    );
+  };
   const peticionesPost = async () => {
-    if (!imageUrl) {
-      console.log("La imagen aún no se ha cargado");
-      return;
-    }
-
     const postData = {
-      nombre: gestorSeleccionado.nombre,
-      nombreFabricante: gestorSeleccionado.nombreFabricante,
-      categoria: gestorSeleccionado.categoria,
-      precio: gestorSeleccionado.precio,
-      cantidad: gestorSeleccionado.cantidad,
+      nombreProducto: gestorSeleccionado.nombreProducto,
+      fabricante: gestorSeleccionado.fabricante,
+      cantidadEntregada: gestorSeleccionado.cantidadEntregada,
+      fechaVencimiento: gestorSeleccionado.fechaVencimiento,
+      fechaEntrada: gestorSeleccionado.fechaEntrada,
       codigo: gestorSeleccionado.codigo,
-      tipoMedicamento: gestorSeleccionado.tipoMedicamento,
-      foto: imageUrl,
+      estado: gestorSeleccionado.estado
     };
-
+    console.log(postData)
     try {
       const response = await axios.post(baseUrl, postData, {
         headers: {
@@ -125,9 +122,18 @@ export default function DashboardInventario() {
   const abrirCerrarModalEditar = () => {
     setModalEditar(!modalEditar);
   };
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
+
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
@@ -150,54 +156,83 @@ export default function DashboardInventario() {
             </button>
             <br />
             <br />
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Fabricante</th>
-                  <th>Precio</th>
-                  <th>categoria</th>
-                  <th> Cantidad</th>
-                  <th> Codigo</th>
-                  <th>Receta</th>
-                  <th> Foto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data &&
-                  data.map((gestor) => (
-                    <tr key={gestor.idMedicamento}>
-                      <td>{gestor.idMedicamento}</td>
-                      <td>{gestor.nombre}</td>
-                      <td>{gestor.nombreFabricante}</td>
-                      <td>{gestor.precio}</td>
-                      <td>{gestor.categoria}</td>
-                      <td>{gestor.cantidad}</td>
-                      <td>{gestor.codigo}</td>
-                      <td>{gestor.tipoMedicamento ? "Si" : "No"}</td>
-                      <td style={{ width: "250px", height: "250px" }}>
-                        {gestor.foto && (
-                          <Image
-                            publicId={gestor.foto}
-                            style={{ maxWidth: "100%", maxHeight: "100%" }}
-                          ></Image>
-                        )}
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => seleccionarGestor(gestor, "Editar")}
-                        >
-                          Editar
-                        </button>
-                        {""}
-                        <button className="btn btn-danger">Eliminar</button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar por nombre..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+            />
+            <TableContainer component={Paper}>
+              <TablePagination
+                rowsPerPageOptions={[1, 5, 10]}
+                component="div"
+                count={data.length}
+                rowsPerPage={perPage}
+                page={currentPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      ID
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Nombre
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Fabricante
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Fecha de entrega
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      Fecha de vencimiento
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Cantidad Recibida
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Codigo
+                    </TableCell>
+
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                      {" "}
+                      Acciones
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data
+                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                    .map((gestor) => (
+                      <TableRow key={gestor.idInentario}>
+                        <TableCell>{gestor.idInventario}</TableCell>
+                        <TableCell>{gestor.nombreProducto}</TableCell>
+                        <TableCell>{gestor.fabricante}</TableCell>
+                        <TableCell>{gestor.fechaEntrada}</TableCell>
+                        <TableCell>{gestor.fechaVencimiento}</TableCell>
+                        <TableCell>{gestor.cantidadEntregada}</TableCell>
+                        <TableCell>{gestor.codigo}</TableCell>
+                        <TableCell>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => seleccionarGestor(gestor, "Editar")}
+                          >
+                            Editar
+                          </button>
+                          {""}
+                          <button className="btn btn-danger">Eliminar</button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </div>
         <Modal show={modalInsertar}>
@@ -209,7 +244,7 @@ export default function DashboardInventario() {
               <input
                 type="text"
                 className="form-control "
-                name="nombre"
+                name="nombreProducto"
                 onChange={handleChange}
               />
               <br />
@@ -219,34 +254,34 @@ export default function DashboardInventario() {
               <input
                 type="text"
                 className="form-control "
-                name="nombreFabricante"
+                name="fabricante"
                 onChange={handleChange}
               />
               <br />
-              <label>Categoria</label>
+              <label>Fecha de entrega</label>
               <br />
               <input
-                type="text"
+                type="date"
                 className="form-control "
-                name="categoria"
+                name="fechaEntrada"
                 onChange={handleChange}
               />
               <br />
-              <label>Precio</label>
+              <label>Fecha de vencimiento</label>
+              <br />
+              <input
+                type="date"
+                className="form-control "
+                name="fechaVencimiento"
+                onChange={handleChange}
+              />
+              <br />
+              <label>Cantidad Recibida</label>
               <br />
               <input
                 type="number"
                 className="form-control "
-                name="precio"
-                onChange={handleChange}
-              />
-              <br />
-              <label>Cantidad</label>
-              <br />
-              <input
-                type="number"
-                className="form-control "
-                name="cantidad"
+                name="cantidadEntregada"
                 onChange={handleChange}
               />
               <br />
@@ -258,43 +293,10 @@ export default function DashboardInventario() {
                 name="codigo"
                 onChange={handleChange}
               />
-              <br />
-              <label>Receta</label>
-              <br />
-              <input
-                type="radio"
-                name="tipoMedicamento"
-                value={true}
-                checked={gestorSeleccionado.tipoMedicamento === true}
-                onChange={handleChange}
-              />
-              <label>Si</label>
-              <br />
-              <input
-                type="radio"
-                name="tipoMedicamento"
-                value={false}
-                checked={gestorSeleccionado.tipoMedicamento === false}
-                onChange={handleChange}
-              />
-              <label>No</label>
-              <br />
-              <label>Foto</label>
-              <br />
-              <input
-                type="file"
-                className="form-control"
-                name="foto"
-                onChange={handleImageUpload}
-              />
+              <br />            
+            
             </div>
-            {imageUrl && (
-              <div>
-                <Image publicId={imageUrl}>
-                  <Transformation width="50" crop="scale" />
-                </Image>
-              </div>
-            )}
+     
           </ModalBody>
           <ModalFooter>
             <button
@@ -409,14 +411,7 @@ export default function DashboardInventario() {
                 <label>No</label>
                 <br />
                 <br />
-                <label>Foto</label>
-                <br />
-                <input
-                  type="file"
-                  className="form-control"
-                  name="foto"
-                  onChange={handleImageUpload}
-                />
+               
               </div>
             </ModalBody>
             <ModalFooter>

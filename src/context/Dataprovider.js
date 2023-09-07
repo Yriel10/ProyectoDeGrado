@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import swal from "sweetalert";
 
 export const DataContext = createContext();
 
@@ -44,7 +45,7 @@ export const DataProvider = (props) => {
         setCarrito(newCarrito);
       }
     } else {
-      alert("El producto ya fue seleccionado");
+      swal("El producto ya fue seleccionado");
     }
   };
   useEffect(() => {
