@@ -1,3 +1,11 @@
+.amarillo {
+  background-color: yellow;
+}
+
+.rojo {
+  background-color: red;
+}
+
 .sidebar {
   width: 14rem;
   height: calc(100vh - 52px);

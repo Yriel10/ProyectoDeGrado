@@ -15,6 +15,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import { useReactToPrint } from "react-to-print";
 import swal from "sweetalert";
+import Cookies from "universal-cookie";
 
 export default function Dashboard() {
   const baseUrl = "https://localhost:7151/api/usuario";
@@ -25,6 +26,9 @@ export default function Dashboard() {
   const [perPage, setPerPage] = useState(5);
   const [filtro, setFiltro] = useState("");
   const componentRef = useRef();
+  const cookies = new Cookies();
+  const idUsuarioEditor = cookies.get("id");
+  const hoy = new Date();
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idUsuario: "",
     nombres: "",
@@ -34,6 +38,18 @@ export default function Dashboard() {
     rol: "Usuario",
     fotoPerfil: "",
   });
+  const [registroLogs, setRegistroLogs] = useState({
+    idUsuario: idUsuarioEditor,
+    accion: "Insertar",
+    tabla: "Usuario",
+    registro: 1,
+    campo: "Nombres, Apellidos,Correo,Rol,Contrasena",
+    valorAntes: "Vacio",
+    valorDespues: "",
+    fecha: hoy,
+    Usuario:"",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setGestorSeleccionado({
@@ -108,6 +124,23 @@ export default function Dashboard() {
     peticionesGet();
   };
 
+  const RegistroPost = async (gestorSeleccionado) => {
+    const registroLogsCopy = { ...registroLogs };
+    registroLogsCopy.valorDespues = JSON.stringify(gestorSeleccionado);
+  
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
+  
+
   const peticionesPost = async () => {
     delete gestorSeleccionado.idUsuario;
     await axios
@@ -115,6 +148,7 @@ export default function Dashboard() {
       .then((response) => {
         setData(data.concat(response.data));
         abrirCerrarModalInsertar();
+        RegistroPost(gestorSeleccionado);
       })
       .catch((error) => {
         console.log(error);

@@ -14,6 +14,7 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
+import swal from "sweetalert";
 
 export default function DashboardProductos() {
   const baseUrl = "https://localhost:7151/api/medicamento";
@@ -71,10 +72,51 @@ export default function DashboardProductos() {
       });
   };
   const filtrarDatos = (datos, consulta) => {
-    return datos.filter((dato) =>
-      dato.nombre.toLowerCase().includes(consulta.toLowerCase())
+    return datos.filter(
+      (dato) =>
+        dato.nombre.toLowerCase().includes(consulta.toLowerCase()) &&
+        dato.estado !== "Eliminado"
     );
   };
+const confirmarEliminacion= async(medicamento) =>{
+    swal({
+      title:"Eliminar" ,
+      text: '¿Estas seguro que deseas eliminar el producto?',
+      icon:"warning",
+      buttons:["No","Si"]
+    }).then(respuesta=>{
+      if(respuesta){
+        swal({text:"Se a eliminado",
+      icon:"success"})
+      peticionesPutEliminar(medicamento);
+      }else{
+        swal({text:"Se cancelo",
+      icon:"error"})
+      }
+
+    })
+
+  }
+  const peticionesPutEliminar = async (medicamento) => {
+    
+    try {
+      medicamento.estado = "Eliminado"; // Asegúrate de establecer el estado en "Eliminar" aquí
+
+      const response = await axios.put(
+        baseUrl + "/" + medicamento.idMedicamento,
+        medicamento
+      );
+      if (response.status === 200) {
+        peticionesGet();
+      } else {
+        console.error("Error al actualizar la solicitud.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar la solicitud:", error);
+    }
+    peticionesGet();
+  };
+  
   const peticionesPost = async () => {
     if (!imageUrl) {
       console.log("La imagen aún no se ha cargado");
@@ -132,6 +174,7 @@ export default function DashboardProductos() {
         console.log(error);
       });
   };
+ 
   const seleccionarGestor = (gestor, caso) => {
     setGestorSeleccionado(gestor);
     caso === "Editar" && abrirCerrarModalEditar();
@@ -263,7 +306,7 @@ export default function DashboardProductos() {
                             Editar
                           </button>
                           {""}
-                          <button className="btn btn-danger">Eliminar</button>
+                          <button className="btn btn-danger" onClick={()=>confirmarEliminacion(gestor)}>Eliminar</button>
                         </TableCell>
                       </TableRow>
                     ))}

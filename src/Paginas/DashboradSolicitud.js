@@ -4,12 +4,26 @@ import axios from "axios";
 import Footers from "../Componetes/Footers";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
+import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
+import TableContainer from "@mui/material/TableContainer"; // Import de Material-UI
+import Table from "@mui/material/Table"; // Import de Material-UI
+import TableBody from "@mui/material/TableBody"; // Import de Material-UI
+import TableCell from "@mui/material/TableCell"; // Import de Material-UI
+import TableHead from "@mui/material/TableHead"; // Import de Material-UI
+import TableRow from "@mui/material/TableRow"; // Import de Material-UI
+import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
+import Paper from "@mui/material/Paper";
 
 export default function DashboardSolicitud() {
   const baseUrl = "https://localhost:7151/api/solicitud";
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null); // Estado para almacenar la información del usuario
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(5);
+  const [filtro, setFiltro] = useState("");
+  const [mostrarNoAtendidos, setMostrarNoAtendidos] = useState(false); // Nuevo estado para controlar el filtro
+
 
   const peticionesGet = async () => {
     await axios
@@ -58,6 +72,14 @@ export default function DashboardSolicitud() {
     }
     peticionesGet();
   };
+
+  const filtrarDatos = (datos, consulta) => {
+    return datos.filter(
+      (dato) =>
+        dato.nombre.toLowerCase().includes(consulta.toLowerCase()) &&
+        dato.estado !== "Eliminado"
+    );
+  };
   const mostrarModalCliente = async (gestor) => {
     try {
       const response = await axios.get(
@@ -75,12 +97,24 @@ export default function DashboardSolicitud() {
       console.error("Error al realizar la solicitud:", error);
     }
   };
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    const newPerPage = parseInt(event.target.value, 10);
+    setPerPage(newPerPage);
+    setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
+  };
 
   useEffect(() => {
     peticionesGet();
-  }, []);
+  }, [filtro]);
+  const asistenciasFiltradas = mostrarNoAtendidos
+  ? data.filter((asistencia) => asistencia.estado === "Incompleto")
+  : data;
   return (
     <div>
+        <CloudinaryContext cloudName="dxy6tbr7v">
       <div>
         <div>
           <Menu />
@@ -92,30 +126,58 @@ export default function DashboardSolicitud() {
             <br />
             <br />
             <br />
+            <label>
+              <input
+                type="checkbox"
+                checked={mostrarNoAtendidos}
+                onChange={() => setMostrarNoAtendidos(!mostrarNoAtendidos)}
+              />{" "}
+              Mostrar Incompleto
+            </label>
             <br />
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Correo</th>
-                  <th>Descripción</th>
-                  <th>Receta</th>
-                   <th>Id Usuario</th>
-                  <th>Estado</th>
-                 
-                </tr>
-              </thead>
-              <tbody>
-                {data &&
-                  data.map((gestor) => (
-                    <tr key={gestor.idSolicitud}>
-                      <td>{gestor.idSolicitud}</td>
-                      <td>{gestor.correo}</td>
-                      <td>{gestor.descripcion}</td>
-                      <td>{gestor.receta}</td>
-                      <td>{gestor.idUsuario}</td>
-                       <td>{gestor.estado}</td>
-                      <td>
+            <TableContainer component={Paper}>
+              <TablePagination
+                rowsPerPageOptions={[1, 5, 10]}
+                component="div"
+                count={asistenciasFiltradas.length}
+                rowsPerPage={perPage}
+                page={currentPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>ID</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Correo</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Descripción</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Receta</TableCell>
+                     <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Id Usuario</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Estado</TableCell>
+          
+        
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                {asistenciasFiltradas
+                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                    .map((gestor) => (
+                    <TableRow key={gestor.idSolicitud}>
+                      <TableCell>{gestor.idSolicitud}</TableCell>
+                      <TableCell>{gestor.correo}</TableCell>
+                      <TableCell>{gestor.descripcion}</TableCell>
+                      <TableCell style={{ width: "250px", height: "250px" }}>
+                        {gestor.receta && (
+                            <Image
+                              publicId={gestor.foto}
+                              style={{ maxWidth: "100%", maxHeight: "100%" }}
+                            ></Image>
+                          )}
+                        
+                        </TableCell>
+                      <TableCell>{gestor.idUsuario}</TableCell>
+                       <TableCell>{gestor.estado}</TableCell>
+                      <TableCell>
                         <button
                           className="btn btn-success"
                           onClick={() => mostrarModalCliente(gestor)}
@@ -134,11 +196,12 @@ export default function DashboardSolicitud() {
                         >
                           Incompleto
                         </button>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-              </tbody>
-            </table>
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </div>
 
@@ -176,6 +239,7 @@ export default function DashboardSolicitud() {
           </Modal.Footer>
         </Modal>
       </div>
+      </CloudinaryContext>
     </div>
   );
 }

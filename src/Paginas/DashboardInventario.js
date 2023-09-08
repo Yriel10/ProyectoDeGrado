@@ -14,6 +14,7 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
+import swal from "sweetalert";
 
 export default function DashboardInventario() {
   const baseUrl = "https://localhost:7151/api/inventarios";
@@ -34,7 +35,9 @@ export default function DashboardInventario() {
     fechaVencimiento: "",
     cantidadEntregada: "",
     codigo: "",
-    estado:"Activo"
+    estado:"Activo",
+    claseCSS:""
+   
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,6 +53,7 @@ export default function DashboardInventario() {
       .get(baseUrl)
       .then((response) => {
         const datosFiltrados = filtrarDatos(response.data, filtro);
+        console.log(datosFiltrados); // Agrega esto para depurar
         setData(datosFiltrados); // Actualiza el estado de datos con los datos filtrados
       })
       .catch((error) => {
@@ -57,10 +61,37 @@ export default function DashboardInventario() {
       });
   };
   const filtrarDatos = (datos, consulta) => {
-    return datos.filter((dato) =>
-      dato.nombreProducto.toLowerCase().includes(consulta.toLowerCase())
+    const productosConAlertas = datos.map((producto) => {
+      const hoy = new Date(); // Mueve la declaración de hoy aquí
+      const fechaVencimiento = new Date(producto.fechaVencimiento);
+      const diferenciaDias = Math.floor(
+        (fechaVencimiento - hoy) / (1000 * 60 * 60 * 24)
+      );
+    
+      let claseCSS = "";
+      if (diferenciaDias <= 30 && diferenciaDias > 0) {
+        claseCSS = "amarillo";
+      } else if (diferenciaDias <= 0) {
+        claseCSS = "rojo";
+      }
+    
+      return {
+        ...producto,
+        claseCSS: claseCSS,
+      };
+  });  
+
+    return productosConAlertas.filter(
+      (dato) =>
+        dato.nombreProducto.toLowerCase().includes(consulta.toLowerCase()) &&
+        dato.estado !== "Eliminado" 
+      
+
     );
   };
+ 
+
+  
   const peticionesPost = async () => {
     const postData = {
       nombreProducto: gestorSeleccionado.nombreProducto,
@@ -84,25 +115,67 @@ export default function DashboardInventario() {
       console.log("Error:", error);
     }
   };
-  const peticionesPut = async () => {
-    if (imageUrl !== "") {
-      gestorSeleccionado.foto = imageUrl;
+
+  
+
+
+  
+  
+  const confirmarEliminacion= async(inventario) =>{
+    swal({
+      title:"Eliminar" ,
+      text: '¿Estas seguro que deseas eliminar el producto?',
+      icon:"warning",
+      buttons:["No","Si"]
+    }).then(respuesta=>{
+      if(respuesta){
+        swal({text:"Se a eliminado",
+      icon:"success"})
+      peticionesPutEliminar(inventario);
+      }else{
+        swal({text:"Se cancelo",
+      icon:"error"})
+      }
+
+    })
+
+  }
+  const peticionesPutEliminar = async (inventario) => {
+    
+    try {
+      inventario.estado = "Eliminado"; // Asegúrate de establecer el estado en "Eliminar" aquí
+
+      const response = await axios.put(
+        baseUrl + "/" + inventario.idInventario,
+        inventario
+      );
+      if (response.status === 200) {
+        peticionesGet();
+      } else {
+        console.error("Error al actualizar la solicitud.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar la solicitud:", error);
     }
+    peticionesGet();
+  };
+  
+  const peticionesPut = async () => {
     await axios
-      .put(baseUrl + "/" + gestorSeleccionado.idMedicamento, gestorSeleccionado)
+      .put(baseUrl + "/" + gestorSeleccionado.idInventario, gestorSeleccionado)
       .then((response) => {
         var respuesta = response.data;
         var dataAuxiliar = data;
         dataAuxiliar.map((gestor) => {
-          if (gestor.idMedicamento === gestorSeleccionado.idMedicamento) {
-            gestor.nombre = respuesta.nombre;
-            gestor.foto = respuesta.foto;
-            gestor.nombreFabricante = respuesta.nombreFabricante;
-            gestor.precio = respuesta.precio;
-            gestor.categoria = respuesta.categoria;
-            gestor.cantidad = respuesta.cantidad;
-            gestor.codigo = respuesta.codigo;
-            gestor.tipoMedicamento = respuesta.tipoMedicamento;
+          if (gestor.idInventario === gestorSeleccionado.idInventario) {
+            
+            gestor.nombreProducto= respuesta.nombreProducto;
+            gestor.fabricante= respuesta.fabricante;
+            gestor.fechaEntrada= respuesta.fechaEntrada;
+            gestor.fechaVencimiento= respuesta.fechaVencimiento;
+            gestor.cantidadEntregada= respuesta.cantidadEntregada;
+            gestor.codigo= respuesta.codigo;
+            
           }
         });
         abrirCerrarModalEditar();
@@ -132,9 +205,18 @@ export default function DashboardInventario() {
   };
 
   useEffect(() => {
+
+
     peticionesGet();
   }, [filtro]);
 
+// Ejecuta esta función cada vez que los datos se actualicen
+  
+  
+  
+  
+  
+  
   ///////////////////////////////////////////////////////////////////////////////
   return (
     <CloudinaryContext cloudName="dxy6tbr7v">
@@ -210,12 +292,12 @@ export default function DashboardInventario() {
                   {data
                     .slice(currentPage * perPage, (currentPage + 1) * perPage)
                     .map((gestor) => (
-                      <TableRow key={gestor.idInentario}>
+                      <TableRow key={gestor.idInventario}  >
                         <TableCell>{gestor.idInventario}</TableCell>
                         <TableCell>{gestor.nombreProducto}</TableCell>
                         <TableCell>{gestor.fabricante}</TableCell>
                         <TableCell>{gestor.fechaEntrada}</TableCell>
-                        <TableCell>{gestor.fechaVencimiento}</TableCell>
+                        <TableCell className={gestor.claseCSS}>{gestor.fechaVencimiento}</TableCell>
                         <TableCell>{gestor.cantidadEntregada}</TableCell>
                         <TableCell>{gestor.codigo}</TableCell>
                         <TableCell>
@@ -226,7 +308,7 @@ export default function DashboardInventario() {
                             Editar
                           </button>
                           {""}
-                          <button className="btn btn-danger">Eliminar</button>
+                          <button className="btn btn-danger" onClick={()=> confirmarEliminacion(gestor)}>Eliminar</button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -324,19 +406,19 @@ export default function DashboardInventario() {
                 <input
                   type="number"
                   className="form-control "
-                  name="idMedicamento"
+                  name="idInventario"
                   readOnly
-                  value={gestorSeleccionado && gestorSeleccionado.idMedicamento}
+                  value={gestorSeleccionado && gestorSeleccionado.idInventario}
                 />
                 <br />
-                <label>Nombre</label>
+                <label>Nombre de producto</label>
                 <br />
                 <input
                   type="text"
                   className="form-control "
-                  name="nombre"
+                  name="nombreProducto"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.nombre}
+                  value={gestorSeleccionado && gestorSeleccionado.nombreProducto}
                 />
                 <br />
                 <label>Fabricante</label>
@@ -344,41 +426,41 @@ export default function DashboardInventario() {
                 <input
                   type="text"
                   className="form-control "
-                  name="nombreFabricante"
+                  name="fabricante"
                   onChange={handleChange}
                   value={
-                    gestorSeleccionado && gestorSeleccionado.nombreFabricante
+                    gestorSeleccionado && gestorSeleccionado.fabricante
                   }
                 />
                 <br />
-                <label>Categoria</label>
+                <label>Fecha de entrega</label>
                 <br />
                 <input
-                  type="text"
+                  type="tex"
                   className="form-control "
-                  name="categoria"
+                  name="fechaEntrada"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.categoria}
+                  value={gestorSeleccionado && gestorSeleccionado.fechaEntrada}
                 />
                 <br />
-                <label>Precio</label>
+                <label>Fecha de vencimiento</label>
+                <br />
+                <input
+                  type="tex"
+                  className="form-control "
+                  name="fechaVencimiento"
+                  onChange={handleChange}
+                  value={gestorSeleccionado && gestorSeleccionado.fechaVencimiento}
+                />
+                <br />
+                <label>Cantidad entregada</label>
                 <br />
                 <input
                   type="number"
                   className="form-control "
-                  name="precio"
+                  name="cantidadEntregada"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.precio}
-                />
-                <br />
-                <label>Cantidad</label>
-                <br />
-                <input
-                  type="number"
-                  className="form-control "
-                  name="cantidad"
-                  onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.cantidad}
+                  value={gestorSeleccionado && gestorSeleccionado.cantidadEntregada}
                 />
                 <br />
                 <label>Codigo</label>
@@ -392,25 +474,7 @@ export default function DashboardInventario() {
                 />
 
                 <br />
-                <label>Receta</label>
-                <br />
-                <input
-                  type="radio"
-                  name="tipoMedicamento"
-                  checked={gestorSeleccionado.tipoMedicamento === true}
-                  onChange={handleChange}
-                />
-                <label>Si</label>
-                <br />
-                <input
-                  type="radio"
-                  name="tipoMedicamento"
-                  checked={gestorSeleccionado.tipoMedicamento === false}
-                  onChange={handleChange}
-                />
-                <label>No</label>
-                <br />
-                <br />
+             
                
               </div>
             </ModalBody>

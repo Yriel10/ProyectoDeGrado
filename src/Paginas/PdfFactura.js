@@ -55,7 +55,7 @@ const PdfFactura = () => {
   const fechaActual = new Date();
   const formattedDate = `${fechaActual.getDate()}/${
     fechaActual.getMonth() + 1
-  }/${fechaActual.getFullYear()}`;
+  }/${fechaActual.getFullYear()}`;  
 
   return (
     <Document>

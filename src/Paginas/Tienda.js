@@ -20,7 +20,6 @@ export default function Tienda() {
   const baseUrl = "https://localhost:7151/api/solicitud";
   
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
-    idSolicitud: "",
     descripcion: "",
     receta: "",
     correo:"",
@@ -53,7 +52,7 @@ export default function Tienda() {
   };
   const peticionesPost = async () => {
     gestorSeleccionado.receta = imageUrl;
-    
+    console.log("Sending: ", gestorSeleccionado); 
     await axios
       .post(baseUrl, gestorSeleccionado)
       .then((response) => {
@@ -61,10 +60,14 @@ export default function Tienda() {
         abrirCerrarModalInsertar();
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error Details:", error.response.data);  // More detailed error message
         alert(error)
       });
   };
+   // Filtrar los productos para excluir los que tienen estado "Eliminado"
+const productosNoEliminados = productosFiltrados.filter(
+  (producto) => producto.estado !== "Eliminado"
+);
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };
@@ -77,7 +80,7 @@ export default function Tienda() {
       <h1 className="title">Productos</h1>
       <button className="btn btn-primary" onClick={abrirCerrarModalInsertar}>Solictar Medicamento</button>
       <div className="productos">
-        {productosFiltrados.map((producto) => (
+        {productosNoEliminados.map((producto) => (
           <Productos
             key={producto.idMedicamento}
             idMedicamento={producto.idMedicamento}
@@ -108,7 +111,7 @@ export default function Tienda() {
               <input
                 type="text"
                 className="form-control"
-                name="Correo"
+                name="correo"
                 onChange={handleChange}
               />
               <br />
