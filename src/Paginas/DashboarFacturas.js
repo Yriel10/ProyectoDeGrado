@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import Footers from "../Componetes/Footers";
@@ -12,6 +12,8 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
+import { useReactToPrint } from "react-to-print";
+import swal from "sweetalert";
 
 export default function DashboardFacturas() {
   const baseUrl = "https://localhost:7151/api/facturas";
@@ -24,7 +26,7 @@ export default function DashboardFacturas() {
   const [filtro, setFiltro] = useState("");
   const [startDate, setStartDate] = useState("");
 const [endDate, setEndDate] = useState("");
-
+const componentRef = useRef();
 
 
 const peticionesGet = async () => {
@@ -90,11 +92,22 @@ const peticionesGet = async () => {
     setPerPage(newPerPage);
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
-  
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "emp-data",
+    onAfterPrint: () => swal("Print Success"),
+  });
   useEffect(() => {
     peticionesGet();
   }, [startDate, endDate]);
   
+  useEffect(() => {
+    let total = 0;
+    data.forEach((factura) => {
+      total += factura.total;
+    });
+    setTotalFacturas(total);
+  }, [data]);
 
   ///////////////////////////////////////////////////////////////////////////////
   return (
@@ -102,6 +115,7 @@ const peticionesGet = async () => {
       <div>
         <Menu />
       </div>
+
       <div className="flex">
         <MenuDasbohard />
             <div className="content">
@@ -111,8 +125,12 @@ const peticionesGet = async () => {
           <h3>Total de ventas: ${totalFacturas}</h3>
           <br />
           <h4>Historial de Factuas</h4>
-          <a href="https://dashboard.stripe.com/"><button className="btn btn-primary" >Ver detalles de pagos </button></a>
+          <a href="https://dashboard.stripe.com/"><button className="btn btn-success" >Ver detalles de pagos </button></a>
           <div>
+          <button className="btn btn-primary" onClick={handlePrint}>
+            Imprimir
+          </button>
+          <br />
   <label>Desde:</label>
   <input
     type="date"
@@ -127,7 +145,7 @@ const peticionesGet = async () => {
   />
 </div>
 
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} ref={componentRef}>
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50]}
                 component="div"
@@ -193,7 +211,7 @@ const peticionesGet = async () => {
                     <br />
                     Precio: {factura.precio}
                     <br />
-                    Total: {factura.total}
+                    Total: {factura.total} 
                   </p>
                 </div>
               ))}

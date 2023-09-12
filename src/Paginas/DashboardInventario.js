@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Menu from "../Componetes/Menu2";
 import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
@@ -15,6 +15,8 @@ import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
+import { useReactToPrint } from "react-to-print";
+
 
 export default function DashboardInventario() {
   const baseUrl = "https://localhost:7151/api/inventarios";
@@ -25,7 +27,7 @@ export default function DashboardInventario() {
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage, setPerPage] = useState(5);
   const [filtro, setFiltro] = useState("");
-
+  const componentRef = useRef();
 
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idInventario: "",
@@ -91,7 +93,12 @@ export default function DashboardInventario() {
   };
  
 
-  
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "emp-data",
+    onAfterPrint: () => swal("Print Success"),
+  });
+
   const peticionesPost = async () => {
     const postData = {
       nombreProducto: gestorSeleccionado.nombreProducto,
@@ -237,6 +244,10 @@ export default function DashboardInventario() {
               Insertar producto nuevo
             </button>
             <br />
+            <button className="btn btn-primary" onClick={handlePrint}>
+            Imprimir
+          </button>
+          <br />
             <br />
             <input
               type="text"
@@ -245,7 +256,7 @@ export default function DashboardInventario() {
               value={filtro}
               onChange={(e) => setFiltro(e.target.value)}
             />
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} ref={componentRef}>
               <TablePagination
                 rowsPerPageOptions={[1, 5, 10]}
                 component="div"

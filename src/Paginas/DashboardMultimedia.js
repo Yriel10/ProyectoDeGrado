@@ -85,7 +85,9 @@ export default function DashboardMultimedia() {
       });
   };
   const peticionesPut = async () => {
-    gestorSeleccionado.foto = imageUrl;
+    if (imageUrl !== "") {
+      gestorSeleccionado.foto = imageUrl;
+    }
     await axios
       .put(baseUrl + "/" + gestorSeleccionado.id, gestorSeleccionado)
       .then((response) => {
@@ -98,10 +100,14 @@ export default function DashboardMultimedia() {
           }
         });
         abrirCerrarModalEditar();
+        
+      peticionesGet();
       })
       .catch((error) => {
         console.log(error);
+
       });
+
   };
   const peticionesDelete = async () => {
     await axios

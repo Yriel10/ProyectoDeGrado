@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Menu from "../Componetes/Menu2";
 import Footers from "../Componetes/Footers";
 import IMG from "../Assest/imagenes/nombreFarmaciasinfondo.png";
@@ -7,6 +7,8 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import PdfFactura from "./PdfFactura";
 import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { DataContext } from "../context/Dataprovider";
 
 export default function Facturacion() {
   const cookies = new Cookies();
@@ -27,7 +29,9 @@ export default function Facturacion() {
   const baseUrl = "https://localhost:7151/api/pedidos";
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
-
+  let navigate = useNavigate();
+  const value = useContext(DataContext); // Obtén el contexto
+  const setCarrito = value.setCarrito; // Obtén la función setCarrito del contexto
   const [facturaCreated, setFacturaCreated] = useState(false);
   const [idFactura, setIdFactura] = useState(null);
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
@@ -143,6 +147,18 @@ export default function Facturacion() {
     console.log(gestorSeleccionado);
   };
 
+  const terminarCompra = () => {
+    // Eliminar los items del carrito del estado
+    setCarrito([]);
+    
+    // Eliminar los items del carrito del almacenamiento local
+    localStorage.removeItem("dataCarrito");
+    localStorage.removeItem("cartTotal");
+  
+    // Navegar a la página de inicio u otra página según tus necesidades
+    navigate("/");
+  };
+  
   // Efecto que se ejecuta inmediatamente después de cargar la página
   useEffect(() => {
     createFactura(); // Crea la factura
@@ -248,6 +264,9 @@ export default function Facturacion() {
                     POR LA LEY"
                   </h6>
                 </div>
+                <button className="btn btn-danger" onClick={()=>terminarCompra()}>
+                  Terminar Compra
+                </button>
                 <PDFDownloadLink document={<PdfFactura />}>
                   <button className="btn btn-primary">Descargar Factura</button>
                 </PDFDownloadLink>

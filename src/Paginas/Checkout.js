@@ -78,11 +78,14 @@ export default function Checkout() {
     // Si hay un valor en la cookie, establece el total actual
     if (cartTotalFromCookie) {
       setCartTotal(parseFloat(cartTotalFromCookie));
+      
     }
+  
+   
   }, []);
 
   const handleVerTotalClick = () => {
-    setTotal(cartTotal); // Actualizar el total en el contexto
+    setTotal(cartTotal);// Actualizar el total en el contexto
     window.location.reload(); // Recargar la página
   };
   return (
@@ -95,7 +98,7 @@ export default function Checkout() {
             <div className="row">
                 <div className="col-sm-9 bg-light p-3 border">
                 <h2>Total del Carrito: ${cartTotal}</h2>
-                <button onClick={handleVerTotalClick} className="btn btn-primary">ver total</button>
+                <button onClick={handleVerTotalClick} className="btn btn-primary">Cargar Compra</button>
                 <CheckoutForm cartTotal={cartTotal}/>
                 </div>
             </div>

@@ -26,8 +26,9 @@ function Menu(props) {
 
   const roles = cookies.get("rol");
   const foto = cookies.get("fotoPerfil");
-  const perfil =
-    "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/SistemaFarmacia/nombreFarmacia_exzjuw.jpg"; // Valor predeterminado en caso de que foto sea undefined
+  const fotoPerfil = foto ? foto.toString() : "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/SistemaFarmacia/nombreFarmacia_exzjuw.jpg";
+  console.log(fotoPerfil)
+  const perfil = "https://res.cloudinary.com/dxy6tbr7v/image/upload/v1691128847/SistemaFarmacia/nombreFarmacia_exzjuw.jpg"; // Valor predeterminado en caso de que foto sea undefined
 
   const rol = roles === undefined ? "usuario" : roles.toString();
 
