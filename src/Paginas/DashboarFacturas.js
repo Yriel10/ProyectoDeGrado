@@ -23,49 +23,45 @@ export default function DashboardFacturas() {
   const [totalFacturas, setTotalFacturas] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
-  const [filtro, setFiltro] = useState("");
   const [startDate, setStartDate] = useState("");
-const [endDate, setEndDate] = useState("");
-const componentRef = useRef();
+  const [endDate, setEndDate] = useState("");
+  const componentRef = useRef();
 
+  const peticionesGet = async () => {
+    try {
+      const response = await axios.get(baseUrl);
 
-const peticionesGet = async () => {
-  try {
-    const response = await axios.get(baseUrl);
+      if (response.status === 200) {
+        const filteredData = response.data.filter((factura) => {
+          const facturaDate = new Date(factura.fecha);
+          const startDateObj = startDate ? new Date(startDate) : null;
+          const endDateObj = endDate ? new Date(endDate) : null;
 
-    if (response.status === 200) {
-      const filteredData = response.data.filter((factura) => {
-        const facturaDate = new Date(factura.fecha);
-        const startDateObj = startDate ? new Date(startDate) : null;
-        const endDateObj = endDate ? new Date(endDate) : null;
+          if (startDateObj && endDateObj) {
+            // Filtra por un rango de fechas si ambos valores están presentes
+            return facturaDate >= startDateObj && facturaDate <= endDateObj;
+          } else if (startDateObj) {
+            // Filtra por fechas mayores o iguales a startDate si endDate no está presente
+            return facturaDate >= startDateObj;
+          } else if (endDateObj) {
+            // Filtra por fechas menores o iguales a endDate si startDate no está presente
+            return facturaDate <= endDateObj;
+          }
 
-        if (startDateObj && endDateObj) {
-          // Filtra por un rango de fechas si ambos valores están presentes
-          return facturaDate >= startDateObj && facturaDate <= endDateObj;
-        } else if (startDateObj) {
-          // Filtra por fechas mayores o iguales a startDate si endDate no está presente
-          return facturaDate >= startDateObj;
-        } else if (endDateObj) {
-          // Filtra por fechas menores o iguales a endDate si startDate no está presente
-          return facturaDate <= endDateObj;
-        }
+          // Si no se establecen fechas de inicio ni fin, muestra todos los datos
+          return true;
+        });
 
-        // Si no se establecen fechas de inicio ni fin, muestra todos los datos
-        return true;
-      });
-
-      // Actualiza el estado 'data' con los datos filtrados
-      setData(filteredData);
-    } else {
-      console.error("Error al obtener las facturas");
+        // Actualiza el estado 'data' con los datos filtrados
+        setData(filteredData);
+      } else {
+        console.error("Error al obtener las facturas");
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
     }
-  } catch (error) {
-    console.error("Error al realizar la solicitud:", error);
-  }
-};
+  };
 
-
-  
   // Función para mostrar el modal con la información de la factura seleccionada
   const mostrarModalFactura = async (gestor) => {
     try {
@@ -100,7 +96,7 @@ const peticionesGet = async () => {
   useEffect(() => {
     peticionesGet();
   }, [startDate, endDate]);
-  
+
   useEffect(() => {
     let total = 0;
     data.forEach((factura) => {
@@ -118,76 +114,85 @@ const peticionesGet = async () => {
 
       <div className="flex">
         <MenuDasbohard />
-            <div className="content">
+        <div className="content">
           <br />
           <br />
           <br />
           <h3>Total de ventas: ${totalFacturas}</h3>
           <br />
           <h4>Historial de Factuas</h4>
-          <a href="https://dashboard.stripe.com/"><button className="btn btn-success" >Ver detalles de pagos </button></a>
+          <a href="https://dashboard.stripe.com/">
+            <button className="btn btn-success">Ver detalles de pagos </button>
+          </a>
           <div>
-          <button className="btn btn-primary" onClick={handlePrint}>
-            Imprimir
-          </button>
-          <br />
-  <label>Desde:</label>
-  <input
-    type="date"
-    value={startDate}
-    onChange={(e) => setStartDate(e.target.value)}
-  />
-  <label>Hasta:</label>
-  <input
-    type="date"
-    value={endDate}
-    onChange={(e) => setEndDate(e.target.value)}
-  />
-</div>
+            <button className="btn btn-primary" onClick={handlePrint}>
+              Imprimir
+            </button>
+            <br />
+            <label>Desde:</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <label>Hasta:</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
 
           <TableContainer component={Paper} ref={componentRef}>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
-                component="div"
-                count={data.length}
-                rowsPerPage={perPage}
-                page={currentPage}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>ID</TableCell>
-                <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Fecha</TableCell>
-                <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Usuario ID</TableCell>
-                <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>Total</TableCell>
-
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={data.length}
+              rowsPerPage={perPage}
+              page={currentPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage} // Esta línea se ha modificado
+            />
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    ID
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Fecha
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Usuario ID
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Total
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {data
-                    .slice(currentPage * perPage, (currentPage + 1) * perPage)
-                    .map((gestor) => (
-                  <TableRow key={gestor.idFactura}>
-                    <TableCell>{gestor.idFactura}</TableCell>
-                    <TableCell>{gestor.fecha}</TableCell>
-                    <TableCell>{gestor.idUsuario}</TableCell>
-                    <TableCell>${gestor.total}</TableCell>
-                    <TableCell>
-                      {" "}
-                      <button
-                        className="btn btn-success"
-                        onClick={() => mostrarModalFactura(gestor)} // Llama a la función para mostrar el modal
-                      >
-                        Ver factura
-                      </button>
-                    </TableCell>
+                  .slice(currentPage * perPage, (currentPage + 1) * perPage)
+                  .map((gestor) => (
+                    <TableRow key={gestor.idFactura}>
+                      <TableCell>{gestor.idFactura}</TableCell>
+                      <TableCell>{gestor.fecha}</TableCell>
+                      <TableCell>{gestor.idUsuario}</TableCell>
+                      <TableCell>${gestor.total}</TableCell>
+                      <TableCell>
+                        {" "}
+                        <button
+                          className="btn btn-success"
+                          onClick={() => mostrarModalFactura(gestor)} // Llama a la función para mostrar el modal
+                        >
+                          Ver factura
+                        </button>
+                      </TableCell>
                     </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
 
@@ -211,7 +216,7 @@ const peticionesGet = async () => {
                     <br />
                     Precio: {factura.precio}
                     <br />
-                    Total: {factura.total} 
+                    Total: {factura.total}
                   </p>
                 </div>
               ))}

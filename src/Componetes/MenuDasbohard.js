@@ -61,7 +61,10 @@ function MenuDasbohard() {
           <Icon path={mdiAssistant} size={1} />
             <NavLink to="/dashboardAsistencia" className="text-dark">Asistencia</NavLink>
           </li>
-          
+          <li>
+          <Icon path={mdiAssistant} size={1} />
+            <NavLink to="/dashboardLogs" className="text-dark">Historial de acciones</NavLink>
+          </li>
           
           
         </ul>
