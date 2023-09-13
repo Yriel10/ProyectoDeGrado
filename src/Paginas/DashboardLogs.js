@@ -12,6 +12,9 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
+import  "../Assest/logs.css";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardLogs() {
   const baseUrl = "https://localhost:7151/api/logs";
@@ -22,6 +25,9 @@ export default function DashboardLogs() {
   const [perPage, setPerPage] = useState(5);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const cookies = new Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
 
   const peticionesGet = async () => {
     try {
@@ -87,7 +93,11 @@ export default function DashboardLogs() {
   useEffect(() => {
     peticionesGet();
   }, [startDate, endDate]);
-
+  useEffect(() => {
+    if (roles === "Delivery" || roles === "Cajero" || roles === undefined) {
+      navigate("/");
+    }
+  }, [roles, navigate]);
   return (
     <div>
       <div>
@@ -97,7 +107,7 @@ export default function DashboardLogs() {
         <div className="flex">
           <MenuDasbohard />
 
-          <div className="content">
+          <div className="content responsive-table-container">
             <br />
             <br />
             <h3>Historial de acciones</h3>
@@ -115,7 +125,7 @@ export default function DashboardLogs() {
               onChange={(e) => setEndDate(e.target.value)}
             />
             <br />
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} >
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50]}
                 component="div"

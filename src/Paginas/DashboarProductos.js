@@ -15,6 +15,7 @@ import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
+import Cookies from "universal-cookie";
 
 export default function DashboardProductos() {
   const baseUrl = "https://localhost:7151/api/medicamento";
@@ -59,7 +60,36 @@ export default function DashboardProductos() {
     });
     console.log(gestorSeleccionado);
   };
-
+  const cookies = new Cookies();
+  const hoy = new Date();
+  const idUsuarioEditor = cookies.get("id");
+  const [registroLogs, setRegistroLogs] = useState({
+    idUsuario: idUsuarioEditor,
+    accion: "Insertar",
+    tabla: "Inventario",
+    registro: 1,
+    campo: "nombre, foto, nombreFabricante,  precio,  categoria,  cantidad,  codigo, tipoMedicamento",
+    valorAntes: "Vacio",
+    valorDespues: "",
+    fecha: hoy,
+    Usuario:"",
+  });
+  const RegistroPost = async (gestorSeleccionado) => {
+    const registroLogsCopy = { ...registroLogs };
+    registroLogsCopy.valorDespues = JSON.stringify(gestorSeleccionado);
+  
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
+  
   const peticionesGet = async () => {
     await axios
       .get(baseUrl)
@@ -141,6 +171,7 @@ const confirmarEliminacion= async(medicamento) =>{
         },
       });
       setData([...data, response.data]);
+      RegistroPost(gestorSeleccionado);
       abrirCerrarModalInsertar();
     } catch (error) {
       console.log("Error:", error);

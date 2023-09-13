@@ -16,7 +16,7 @@ import TablePagination from "@mui/material/TablePagination"; // Import de Materi
 import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
 import { useReactToPrint } from "react-to-print";
-
+import Cookies from "universal-cookie";
 
 export default function DashboardInventario() {
   const baseUrl = "https://localhost:7151/api/inventarios";
@@ -28,7 +28,10 @@ export default function DashboardInventario() {
   const [perPage, setPerPage] = useState(5);
   const [filtro, setFiltro] = useState("");
   const componentRef = useRef();
-
+  const cookies = new Cookies();
+  const hoy = new Date();
+  const idUsuarioEditor = cookies.get("id");
+  
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idInventario: "",
     nombreProducto:"",
@@ -41,6 +44,17 @@ export default function DashboardInventario() {
     claseCSS:""
    
   });
+  const [registroLogs, setRegistroLogs] = useState({
+    idUsuario: idUsuarioEditor,
+    accion: "Insertar",
+    tabla: "Inventario",
+    registro: 1,
+    campo: "nombreProducto,fabricante,fechaEntrada,fechaVencimiento,cantidadEntregada,codigo",
+    valorAntes: "Vacio",
+    valorDespues: "",
+    fecha: hoy,
+    Usuario:"",
+  });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setGestorSeleccionado({
@@ -49,6 +63,22 @@ export default function DashboardInventario() {
     });
     console.log(gestorSeleccionado);
   };
+  const RegistroPost = async (gestorSeleccionado) => {
+    const registroLogsCopy = { ...registroLogs };
+    registroLogsCopy.valorDespues = JSON.stringify(gestorSeleccionado);
+  
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
+  
 
   const peticionesGet = async () => {
     await axios
@@ -117,6 +147,7 @@ export default function DashboardInventario() {
         },
       });
       setData([...data, response.data]);
+      RegistroPost(gestorSeleccionado);
       abrirCerrarModalInsertar();
     } catch (error) {
       console.log("Error:", error);

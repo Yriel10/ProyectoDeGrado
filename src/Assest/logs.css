@@ -1,0 +1,6 @@
+/* En tu archivo CSS o archivo de estilo */
+.responsive-table-container {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
