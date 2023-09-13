@@ -7,13 +7,6 @@ function Carrusel() {
   const baseUrl = "https://localhost:7151/api/multimedias";
   const [data, setData] = useState([]);
 
-  const [gestorSeleccionado, setGestorSeleccionado] = useState({
-    id: "",
-    nombre: "",
-    foto: "",
-  });
- 
-
   const peticionesGet = async () => {
     await axios
       .get(baseUrl)
@@ -24,27 +17,25 @@ function Carrusel() {
         console.log(error);
       });
   };
+
   useEffect(() => {
     peticionesGet();
   }, []);
 
-
   return (
     <div>
       <Carousel>
-      
-          {data.map((gestor)=>(
-           gestor.foto && ( 
-            <Carousel.Item>
-           <Image
-            className="d-block w-100"
-            cloudName="dxy6tbr7v"
-            publicId={gestor.foto}
-           
-          />
-          </Carousel.Item>)
-          ))}
-        
+        {data.map((gestor) =>
+          gestor.foto && (
+            <Carousel.Item key={gestor.id}>
+              <Image
+                className="d-block w-100"
+                cloudName="dxy6tbr7v"
+                publicId={gestor.foto}
+              />
+            </Carousel.Item>
+          )
+        )}
       </Carousel>
     </div>
   );

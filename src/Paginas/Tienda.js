@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../Assest/productos.css";
 import Menu from "../Componetes/Menu2";
 import Footers from "../Componetes/Footers";
@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
+import Cookies from "universal-cookie";
 
 export default function Tienda() {
   const value = useContext(DataContext);
@@ -18,15 +19,18 @@ export default function Tienda() {
   const [modalInsertar, setModalInsertar] = useState(false);
   const productosFiltrados = state ? state.productos : value.productos;
   const baseUrl = "https://localhost:7151/api/solicitud";
-  
+  const [botonSolicitar, setBotonSolicitar] = useState(true);
+  const cookies = new Cookies();
+  const roles = cookies.get("rol");
+
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     descripcion: "",
     receta: "",
-    correo:"",
+    correo: "",
     idUsuario: "1",
-    estado:"incompleto"
+    estado: "incompleto",
   });
- 
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
@@ -52,7 +56,7 @@ export default function Tienda() {
   };
   const peticionesPost = async () => {
     gestorSeleccionado.receta = imageUrl;
-    console.log("Sending: ", gestorSeleccionado); 
+    console.log("Sending: ", gestorSeleccionado);
     await axios
       .post(baseUrl, gestorSeleccionado)
       .then((response) => {
@@ -60,17 +64,25 @@ export default function Tienda() {
         abrirCerrarModalInsertar();
       })
       .catch((error) => {
-        console.log("Error Details:", error.response.data);  // More detailed error message
-        alert(error)
+        console.log("Error Details:", error.response.data); // More detailed error message
+        alert(error);
       });
   };
-   // Filtrar los productos para excluir los que tienen estado "Eliminado"
-const productosNoEliminados = productosFiltrados.filter(
-  (producto) => producto.estado !== "Eliminado"
-);
+  // Filtrar los productos para excluir los que tienen estado "Eliminado"
+  const productosNoEliminados = productosFiltrados.filter(
+    (producto) => producto.estado !== "Eliminado"
+  );
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };
+  const vistaSolicitud = () => {
+    setBotonSolicitar(!botonSolicitar);
+  };
+  useEffect(() => {
+    if (roles !== undefined) {
+      vistaSolicitud();
+    }
+  }, []);
 
   return (
     <>
@@ -78,7 +90,14 @@ const productosNoEliminados = productosFiltrados.filter(
         <Menu />
       </div>
       <h1 className="title">Productos</h1>
-      <button className="btn btn-primary" onClick={abrirCerrarModalInsertar}>Solictar Medicamento</button>
+
+      <button
+        className="btn btn-primary"
+        onClick={abrirCerrarModalInsertar}
+        hidden={botonSolicitar}
+      >
+        Solictar Medicamento
+      </button>
       <div className="productos">
         {productosNoEliminados.map((producto) => (
           <Productos
@@ -92,66 +111,66 @@ const productosNoEliminados = productosFiltrados.filter(
         ))}
       </div>
       <CloudinaryContext cloudName="dxy6tbr7v">
-      <div>
-      <Modal show={modalInsertar}>
-          <ModalHeader>Solicitar  Medicamento</ModalHeader>
-          <ModalBody>
-            <div className="form-group">
-              <label>Nombre del Medicamento</label>
-              <br />
-              <input
-                type="text"
-                className="form-control"
-                name="descripcion"
-                onChange={handleChange}
-              />
-              <br />
-              <label>correo</label>
-              <br />
-              <input
-                type="text"
-                className="form-control"
-                name="correo"
-                onChange={handleChange}
-              />
-              <br />
+        <div>
+          <Modal show={modalInsertar}>
+            <ModalHeader>Solicitar Medicamento</ModalHeader>
+            <ModalBody>
+              <div className="form-group">
+                <label>Nombre del Medicamento</label>
+                <br />
+                <input
+                  type="text"
+                  className="form-control"
+                  name="descripcion"
+                  onChange={handleChange}
+                />
+                <br />
+                <label>correo</label>
+                <br />
+                <input
+                  type="text"
+                  className="form-control"
+                  name="correo"
+                  onChange={handleChange}
+                />
+                <br />
 
-              <label>receta</label>
-              <br />
-              <input
-                type="file"
-                className="form-control"
-                name="receta"
-                onChange={handleImageUpload}
-              />
-        
-            {imageUrl && (
-              <div>
-                <Image publicId={imageUrl}>
-                  <Transformation width="50" crop="scale" />
-                </Image>
+                <label>receta</label>
+                <br />
+                <input
+                  type="file"
+                  className="form-control"
+                  name="receta"
+                  onChange={handleImageUpload}
+                />
+
+                {imageUrl && (
+                  <div>
+                    <Image publicId={imageUrl}>
+                      <Transformation width="50" crop="scale" />
+                    </Image>
+                  </div>
+                )}
               </div>
-            )}
+            </ModalBody>
+            <ModalFooter>
+              <button
+                className="btn btn-primary"
+                onClick={() => peticionesPost()}
+              >
+                Solicitar
+              </button>{" "}
+              <button
+                className="btn btn-danger"
+                onClick={abrirCerrarModalInsertar} // Invoca abrirCerrarModalInsertar
+              >
+                Cancelar
+              </button>
+            </ModalFooter>
+          </Modal>
+        </div>
 
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <button className="btn btn-primary" onClick={() => peticionesPost()}>
-              Solicitar
-            </button>{" "}
-       
-            <button
-              className="btn btn-danger"
-              onClick={abrirCerrarModalInsertar} // Invoca abrirCerrarModalInsertar
-            >
-              Cancelar
-            </button>
-          </ModalFooter>
-        </Modal>
-        
-      </div>
-      
-      <Footers />
+        <Footers />
       </CloudinaryContext>
     </>
   );
