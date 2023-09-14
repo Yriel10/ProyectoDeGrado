@@ -107,7 +107,7 @@ export default function DashboardSolicitud() {
     setPerPage(newPerPage);
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
-  const cookies = Cookies();
+  const cookies = new Cookies();
   const navigate = useNavigate();
   const roles = cookies.get("rol");
   useEffect(() => {

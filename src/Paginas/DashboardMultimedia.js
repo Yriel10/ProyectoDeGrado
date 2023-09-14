@@ -13,11 +13,12 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper"; // Import de Material-UI
-import Cookies from "universal-cookie";
+import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
 
 export default function DashboardMultimedia() {
   const baseUrl = "https://localhost:7151/api/multimedias";
+  const cookies = new Cookies();
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -27,6 +28,9 @@ export default function DashboardMultimedia() {
   const [perPage, setPerPage] = useState(5);
   const [filtro, setFiltro] = useState("");
 
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
@@ -137,7 +141,12 @@ export default function DashboardMultimedia() {
     setPerPage(newPerPage);
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
-
+ 
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
   useEffect(() => {
     peticionesGet();
   }, [filtro]);
@@ -151,14 +160,7 @@ export default function DashboardMultimedia() {
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
-  const cookies = Cookies();
-  const navigate = useNavigate();
-  const roles = cookies.get("rol");
-  useEffect(() => {
-    if (roles === "Delivery") {
-      navigate("/DashboardPedidos");
-    }
-  }, [roles, navigate]);
+  
   ///////////////////////////////////////////////////////////////////////////////
   return (
     <CloudinaryContext cloudName="dxy6tbr7v">

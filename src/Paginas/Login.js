@@ -77,7 +77,7 @@ function Login(props) {
         cookies.set("apellidos", usuario.apellidos, { path: "/" });
         cookies.set("correo", usuario.correo, { path: "/" });
         cookies.set("contrasena", usuario.contrasena, { path: "/" });
-        cookies.set("rol", usuario.rol, { path: "/" });
+        cookies.set("rol", usuario.rol, { path: "/" },{ path: "/DashboardMultimiedia" });
         cookies.set("fotoPerfil", usuario.fotoPefil, { path: "/" });
         swal({
           title:"Bienvenido:" ,

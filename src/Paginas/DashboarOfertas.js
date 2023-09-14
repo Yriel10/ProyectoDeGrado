@@ -118,7 +118,7 @@ export default function DashboarOfertas() {
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
-  const cookies = Cookies();
+  const cookies = new Cookies();
   const navigate = useNavigate();
   const roles = cookies.get("rol");
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function DashboarOfertas() {
       navigate("/DashboardPedidos");
     }
   }, [roles, navigate]);
-  
+
   useEffect(() => {
     peticionesGet();
   }, []);

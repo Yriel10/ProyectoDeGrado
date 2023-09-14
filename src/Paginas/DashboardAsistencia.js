@@ -84,7 +84,7 @@ export default function DashboardAsistencia() {
     setPerPage(newPerPage);
     setCurrentPage(0);
   };
-  const cookies = Cookies();
+  const cookies = new Cookies();
   const navigate = useNavigate();
   const roles = cookies.get("rol");
   useEffect(() => {
