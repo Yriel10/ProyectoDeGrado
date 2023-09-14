@@ -16,6 +16,7 @@ import TablePagination from "@mui/material/TablePagination"; // Import de Materi
 import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
 import Cookies from "universal-cookie";
+import { json } from "react-router-dom";
 
 export default function DashboardProductos() {
   const baseUrl = "https://localhost:7151/api/medicamento";
@@ -66,8 +67,8 @@ export default function DashboardProductos() {
   const [registroLogs, setRegistroLogs] = useState({
     idUsuario: idUsuarioEditor,
     accion: "Insertar",
-    tabla: "Inventario",
-    registro: 1,
+    tabla: "Productos",
+    registro: "",
     campo: "nombre, foto, nombreFabricante,  precio,  categoria,  cantidad,  codigo, tipoMedicamento",
     valorAntes: "Vacio",
     valorDespues: "",
@@ -89,7 +90,26 @@ export default function DashboardProductos() {
         console.log(registroLogsCopy)
       });
   };
-  
+  const RegistroPostEliminacion = async (medicamento) => {
+    const registroLogsCopy = { ...registroLogs };
+    console.log(registroLogsCopy,"2");
+    console.log(medicamento,"3")
+    registroLogsCopy.accion="Eliminar";
+    registroLogsCopy.registro= JSON	.stringify(medicamento.idMedicamento)
+    registroLogsCopy.valorAntes = JSON.stringify(medicamento)
+    registroLogsCopy.valorDespues = JSON.stringify(medicamento.estado);
+    console.log(registroLogsCopy,"4");
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
   const peticionesGet = async () => {
     await axios
       .get(baseUrl)
@@ -131,20 +151,24 @@ const confirmarEliminacion= async(medicamento) =>{
     
     try {
       medicamento.estado = "Eliminado"; // Asegúrate de establecer el estado en "Eliminar" aquí
-
       const response = await axios.put(
         baseUrl + "/" + medicamento.idMedicamento,
         medicamento
       );
       if (response.status === 200) {
+       
         peticionesGet();
+
       } else {
-        console.error("Error al actualizar la solicitud.");
+     
+
       }
     } catch (error) {
       console.error("Error al actualizar la solicitud:", error);
     }
+  
     peticionesGet();
+    RegistroPostEliminacion(medicamento);
   };
   
   const peticionesPost = async () => {

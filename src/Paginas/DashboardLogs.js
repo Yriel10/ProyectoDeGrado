@@ -22,7 +22,7 @@ export default function DashboardLogs() {
   const [modalVisible, setModalVisible] = useState(false); // Estado para controlar la visibilidad del modal
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null); // Estado para almacenar la información del usuario
   const [currentPage, setCurrentPage] = useState(0);
-  const [perPage, setPerPage] = useState(5);
+  const [perPage, setPerPage] = useState(10);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const cookies = new Cookies();
@@ -148,7 +148,7 @@ export default function DashboardLogs() {
                       Tabla
                     </TableCell>
                     <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
-                      Registros cambiados
+                      Registro cambiado
                     </TableCell>
                     <TableCell style={{ fontWeight: "bold", fontSize: "16px" }}>
                       Campo

@@ -79,7 +79,26 @@ export default function DashboardInventario() {
       });
   };
   
-
+  const RegistroPostEliminacion = async (inventario) => {
+    const registroLogsCopy = { ...registroLogs };
+    console.log(registroLogsCopy,"2");
+    console.log(inventario,"3")
+    registroLogsCopy.accion="Eliminar";
+    registroLogsCopy.registro= JSON	.stringify(inventario.idInventario)
+    registroLogsCopy.valorAntes = JSON.stringify(inventario)
+    registroLogsCopy.valorDespues = JSON.stringify(inventario.estado);
+    console.log(registroLogsCopy,"4");
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
   const peticionesGet = async () => {
     await axios
       .get(baseUrl)
@@ -195,7 +214,9 @@ export default function DashboardInventario() {
     } catch (error) {
       console.error("Error al actualizar la solicitud:", error);
     }
+  
     peticionesGet();
+    RegistroPostEliminacion(inventario);
   };
   
   const peticionesPut = async () => {

@@ -17,12 +17,8 @@ export default function Nosotros() {
           con farmacias mas grandes para poder obtener medicamentos que la comunidad necesita
           estamos trabajando para llevar la salud a nuestro municipio.
         </p>
-        <span className="titulo">Valores</span>
-        <ul>
-          <li>
-            
-          </li>
-        </ul>
+       
+     
       </div>
     </div>
   );

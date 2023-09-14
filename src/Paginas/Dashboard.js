@@ -86,7 +86,26 @@ export default function Dashboard() {
         dato.estado !== "Eliminado"
     );
   };
-
+  const RegistroPostEliminacion = async (usuario) => {
+    const registroLogsCopy = { ...registroLogs };
+    console.log(registroLogsCopy,"2");
+    console.log(usuario,"3")
+    registroLogsCopy.accion="Eliminar";
+    registroLogsCopy.registro= JSON	.stringify(usuario.idUsuario)
+    registroLogsCopy.valorAntes = JSON.stringify(usuario)
+    registroLogsCopy.valorDespues = JSON.stringify(usuario.estado);
+    console.log(registroLogsCopy,"4");
+    await axios
+      .post("https://localhost:7151/api/logs", registroLogsCopy)
+      .then((response) => {
+        setData(data.concat(response.data));
+    
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(registroLogsCopy)
+      });
+  };
   const confirmarEliminacion= async(usuario) =>{
     swal({
       title:"Eliminar" ,
@@ -124,6 +143,7 @@ export default function Dashboard() {
       console.error("Error al actualizar la solicitud:", error);
     }
     peticionesGet();
+    RegistroPostEliminacion(usuario);
   };
 
   const RegistroPost = async (gestorSeleccionado) => {
