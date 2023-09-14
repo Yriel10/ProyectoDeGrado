@@ -16,7 +16,7 @@ import TablePagination from "@mui/material/TablePagination"; // Import de Materi
 import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
 import Cookies from "universal-cookie";
-import { json } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardProductos() {
   const baseUrl = "https://localhost:7151/api/medicamento";
@@ -248,6 +248,14 @@ const confirmarEliminacion= async(medicamento) =>{
     setPerPage(newPerPage);
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
+
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
 
   useEffect(() => {
     peticionesGet();

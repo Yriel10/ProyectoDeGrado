@@ -12,7 +12,7 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
-import  "../Assest/logs.css";
+import "../Assest/logs.css";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -125,7 +125,7 @@ export default function DashboardLogs() {
               onChange={(e) => setEndDate(e.target.value)}
             />
             <br />
-            <TableContainer component={Paper} >
+            <TableContainer component={Paper}>
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50]}
                 component="div"

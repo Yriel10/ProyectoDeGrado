@@ -12,6 +12,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardAsistencia() {
   const baseUrl = "https://localhost:7151/api/asistencias";
@@ -82,6 +84,14 @@ export default function DashboardAsistencia() {
     setPerPage(newPerPage);
     setCurrentPage(0);
   };
+  const cookies = Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
 
   useEffect(() => {
     peticionesGet();

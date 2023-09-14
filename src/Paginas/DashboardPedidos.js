@@ -12,6 +12,8 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPedidos() {
   const baseUrl = "https://localhost:7151/api/pedidos";
@@ -94,6 +96,15 @@ const handleChangePage = (event, newPage) => {
     setPerPage(newPerPage);
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
+
+  const cookies = Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
 
   useEffect(() => {
     peticionesGet();

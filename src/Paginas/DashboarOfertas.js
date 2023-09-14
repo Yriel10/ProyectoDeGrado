@@ -5,6 +5,8 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import Footers from "../Componetes/Footers";
 import { CloudinaryContext, Image, Transformation } from "cloudinary-react";
 import MenuDasbohard from "../Componetes/MenuDasbohard";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboarOfertas() {
   const baseUrl = "https://localhost:7151/api/ofertas";
@@ -116,6 +118,15 @@ export default function DashboarOfertas() {
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
+  const cookies = Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
+  
   useEffect(() => {
     peticionesGet();
   }, []);

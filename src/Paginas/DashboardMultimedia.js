@@ -13,6 +13,8 @@ import TableHead from "@mui/material/TableHead"; // Import de Material-UI
 import TableRow from "@mui/material/TableRow"; // Import de Material-UI
 import TablePagination from "@mui/material/TablePagination"; // Import de Material-UI
 import Paper from "@mui/material/Paper"; // Import de Material-UI
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardMultimedia() {
   const baseUrl = "https://localhost:7151/api/multimedias";
@@ -100,14 +102,12 @@ export default function DashboardMultimedia() {
           }
         });
         abrirCerrarModalEditar();
-        
-      peticionesGet();
+
+        peticionesGet();
       })
       .catch((error) => {
         console.log(error);
-
       });
-
   };
   const peticionesDelete = async () => {
     await axios
@@ -151,7 +151,14 @@ export default function DashboardMultimedia() {
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
-
+  const cookies = Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
   ///////////////////////////////////////////////////////////////////////////////
   return (
     <CloudinaryContext cloudName="dxy6tbr7v">

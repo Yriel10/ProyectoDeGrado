@@ -17,6 +17,7 @@ import Paper from "@mui/material/Paper";
 import swal from "sweetalert";
 import { useReactToPrint } from "react-to-print";
 import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardInventario() {
   const baseUrl = "https://localhost:7151/api/inventarios";
@@ -31,29 +32,29 @@ export default function DashboardInventario() {
   const cookies = new Cookies();
   const hoy = new Date();
   const idUsuarioEditor = cookies.get("id");
-  
+
   const [gestorSeleccionado, setGestorSeleccionado] = useState({
     idInventario: "",
-    nombreProducto:"",
+    nombreProducto: "",
     fabricante: "",
     fechaEntrada: "",
     fechaVencimiento: "",
     cantidadEntregada: "",
     codigo: "",
-    estado:"Activo",
-    claseCSS:""
-   
+    estado: "Activo",
+    claseCSS: "",
   });
   const [registroLogs, setRegistroLogs] = useState({
     idUsuario: idUsuarioEditor,
     accion: "Insertar",
     tabla: "Inventario",
     registro: 1,
-    campo: "nombreProducto,fabricante,fechaEntrada,fechaVencimiento,cantidadEntregada,codigo",
+    campo:
+      "nombreProducto,fabricante,fechaEntrada,fechaVencimiento,cantidadEntregada,codigo",
     valorAntes: "Vacio",
     valorDespues: "",
     fecha: hoy,
-    Usuario:"",
+    Usuario: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,37 +67,35 @@ export default function DashboardInventario() {
   const RegistroPost = async (gestorSeleccionado) => {
     const registroLogsCopy = { ...registroLogs };
     registroLogsCopy.valorDespues = JSON.stringify(gestorSeleccionado);
-  
+
     await axios
       .post("https://localhost:7151/api/logs", registroLogsCopy)
       .then((response) => {
         setData(data.concat(response.data));
-    
       })
       .catch((error) => {
         console.log(error);
-        console.log(registroLogsCopy)
+        console.log(registroLogsCopy);
       });
   };
-  
+
   const RegistroPostEliminacion = async (inventario) => {
     const registroLogsCopy = { ...registroLogs };
-    console.log(registroLogsCopy,"2");
-    console.log(inventario,"3")
-    registroLogsCopy.accion="Eliminar";
-    registroLogsCopy.registro= JSON	.stringify(inventario.idInventario)
-    registroLogsCopy.valorAntes = JSON.stringify(inventario)
+    console.log(registroLogsCopy, "2");
+    console.log(inventario, "3");
+    registroLogsCopy.accion = "Eliminar";
+    registroLogsCopy.registro = JSON.stringify(inventario.idInventario);
+    registroLogsCopy.valorAntes = JSON.stringify(inventario);
     registroLogsCopy.valorDespues = JSON.stringify(inventario.estado);
-    console.log(registroLogsCopy,"4");
+    console.log(registroLogsCopy, "4");
     await axios
       .post("https://localhost:7151/api/logs", registroLogsCopy)
       .then((response) => {
         setData(data.concat(response.data));
-    
       })
       .catch((error) => {
         console.log(error);
-        console.log(registroLogsCopy)
+        console.log(registroLogsCopy);
       });
   };
   const peticionesGet = async () => {
@@ -118,29 +117,26 @@ export default function DashboardInventario() {
       const diferenciaDias = Math.floor(
         (fechaVencimiento - hoy) / (1000 * 60 * 60 * 24)
       );
-    
+
       let claseCSS = "";
       if (diferenciaDias <= 30 && diferenciaDias > 0) {
         claseCSS = "amarillo";
       } else if (diferenciaDias <= 0) {
         claseCSS = "rojo";
       }
-    
+
       return {
         ...producto,
         claseCSS: claseCSS,
       };
-  });  
+    });
 
     return productosConAlertas.filter(
       (dato) =>
         dato.nombreProducto.toLowerCase().includes(consulta.toLowerCase()) &&
-        dato.estado !== "Eliminado" 
-      
-
+        dato.estado !== "Eliminado"
     );
   };
- 
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -156,9 +152,9 @@ export default function DashboardInventario() {
       fechaVencimiento: gestorSeleccionado.fechaVencimiento,
       fechaEntrada: gestorSeleccionado.fechaEntrada,
       codigo: gestorSeleccionado.codigo,
-      estado: gestorSeleccionado.estado
+      estado: gestorSeleccionado.estado,
     };
-    console.log(postData)
+    console.log(postData);
     try {
       const response = await axios.post(baseUrl, postData, {
         headers: {
@@ -173,32 +169,22 @@ export default function DashboardInventario() {
     }
   };
 
-  
-
-
-  
-  
-  const confirmarEliminacion= async(inventario) =>{
+  const confirmarEliminacion = async (inventario) => {
     swal({
-      title:"Eliminar" ,
-      text: '¿Estas seguro que deseas eliminar el producto?',
-      icon:"warning",
-      buttons:["No","Si"]
-    }).then(respuesta=>{
-      if(respuesta){
-        swal({text:"Se a eliminado",
-      icon:"success"})
-      peticionesPutEliminar(inventario);
-      }else{
-        swal({text:"Se cancelo",
-      icon:"error"})
+      title: "Eliminar",
+      text: "¿Estas seguro que deseas eliminar el producto?",
+      icon: "warning",
+      buttons: ["No", "Si"],
+    }).then((respuesta) => {
+      if (respuesta) {
+        swal({ text: "Se a eliminado", icon: "success" });
+        peticionesPutEliminar(inventario);
+      } else {
+        swal({ text: "Se cancelo", icon: "error" });
       }
-
-    })
-
-  }
+    });
+  };
   const peticionesPutEliminar = async (inventario) => {
-    
     try {
       inventario.estado = "Eliminado"; // Asegúrate de establecer el estado en "Eliminar" aquí
 
@@ -214,11 +200,11 @@ export default function DashboardInventario() {
     } catch (error) {
       console.error("Error al actualizar la solicitud:", error);
     }
-  
+
     peticionesGet();
     RegistroPostEliminacion(inventario);
   };
-  
+
   const peticionesPut = async () => {
     await axios
       .put(baseUrl + "/" + gestorSeleccionado.idInventario, gestorSeleccionado)
@@ -227,14 +213,12 @@ export default function DashboardInventario() {
         var dataAuxiliar = data;
         dataAuxiliar.map((gestor) => {
           if (gestor.idInventario === gestorSeleccionado.idInventario) {
-            
-            gestor.nombreProducto= respuesta.nombreProducto;
-            gestor.fabricante= respuesta.fabricante;
-            gestor.fechaEntrada= respuesta.fechaEntrada;
-            gestor.fechaVencimiento= respuesta.fechaVencimiento;
-            gestor.cantidadEntregada= respuesta.cantidadEntregada;
-            gestor.codigo= respuesta.codigo;
-            
+            gestor.nombreProducto = respuesta.nombreProducto;
+            gestor.fabricante = respuesta.fabricante;
+            gestor.fechaEntrada = respuesta.fechaEntrada;
+            gestor.fechaVencimiento = respuesta.fechaVencimiento;
+            gestor.cantidadEntregada = respuesta.cantidadEntregada;
+            gestor.codigo = respuesta.codigo;
           }
         });
         abrirCerrarModalEditar();
@@ -263,19 +247,19 @@ export default function DashboardInventario() {
     setCurrentPage(0); // Vuelve a la primera página cuando cambias las filas por página
   };
 
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
   useEffect(() => {
-
-
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
+  useEffect(() => {
     peticionesGet();
   }, [filtro]);
 
-// Ejecuta esta función cada vez que los datos se actualicen
-  
-  
-  
-  
-  
-  
+  // Ejecuta esta función cada vez que los datos se actualicen
+
   ///////////////////////////////////////////////////////////////////////////////
   return (
     <CloudinaryContext cloudName="dxy6tbr7v">
@@ -297,9 +281,9 @@ export default function DashboardInventario() {
             </button>
             <br />
             <button className="btn btn-primary" onClick={handlePrint}>
-            Imprimir
-          </button>
-          <br />
+              Imprimir
+            </button>
+            <br />
             <br />
             <input
               type="text"
@@ -355,12 +339,14 @@ export default function DashboardInventario() {
                   {data
                     .slice(currentPage * perPage, (currentPage + 1) * perPage)
                     .map((gestor) => (
-                      <TableRow key={gestor.idInventario}  >
+                      <TableRow key={gestor.idInventario}>
                         <TableCell>{gestor.idInventario}</TableCell>
                         <TableCell>{gestor.nombreProducto}</TableCell>
                         <TableCell>{gestor.fabricante}</TableCell>
                         <TableCell>{gestor.fechaEntrada}</TableCell>
-                        <TableCell className={gestor.claseCSS}>{gestor.fechaVencimiento}</TableCell>
+                        <TableCell className={gestor.claseCSS}>
+                          {gestor.fechaVencimiento}
+                        </TableCell>
                         <TableCell>{gestor.cantidadEntregada}</TableCell>
                         <TableCell>{gestor.codigo}</TableCell>
                         <TableCell>
@@ -371,7 +357,12 @@ export default function DashboardInventario() {
                             Editar
                           </button>
                           {""}
-                          <button className="btn btn-danger" onClick={()=> confirmarEliminacion(gestor)}>Eliminar</button>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => confirmarEliminacion(gestor)}
+                          >
+                            Eliminar
+                          </button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -438,10 +429,8 @@ export default function DashboardInventario() {
                 name="codigo"
                 onChange={handleChange}
               />
-              <br />            
-            
+              <br />
             </div>
-     
           </ModalBody>
           <ModalFooter>
             <button
@@ -481,7 +470,9 @@ export default function DashboardInventario() {
                   className="form-control "
                   name="nombreProducto"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.nombreProducto}
+                  value={
+                    gestorSeleccionado && gestorSeleccionado.nombreProducto
+                  }
                 />
                 <br />
                 <label>Fabricante</label>
@@ -491,9 +482,7 @@ export default function DashboardInventario() {
                   className="form-control "
                   name="fabricante"
                   onChange={handleChange}
-                  value={
-                    gestorSeleccionado && gestorSeleccionado.fabricante
-                  }
+                  value={gestorSeleccionado && gestorSeleccionado.fabricante}
                 />
                 <br />
                 <label>Fecha de entrega</label>
@@ -513,7 +502,9 @@ export default function DashboardInventario() {
                   className="form-control "
                   name="fechaVencimiento"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.fechaVencimiento}
+                  value={
+                    gestorSeleccionado && gestorSeleccionado.fechaVencimiento
+                  }
                 />
                 <br />
                 <label>Cantidad entregada</label>
@@ -523,7 +514,9 @@ export default function DashboardInventario() {
                   className="form-control "
                   name="cantidadEntregada"
                   onChange={handleChange}
-                  value={gestorSeleccionado && gestorSeleccionado.cantidadEntregada}
+                  value={
+                    gestorSeleccionado && gestorSeleccionado.cantidadEntregada
+                  }
                 />
                 <br />
                 <label>Codigo</label>
@@ -537,8 +530,6 @@ export default function DashboardInventario() {
                 />
 
                 <br />
-             
-               
               </div>
             </ModalBody>
             <ModalFooter>

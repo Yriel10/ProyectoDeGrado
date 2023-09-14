@@ -14,6 +14,8 @@ import TablePagination from "@mui/material/TablePagination"; // Import de Materi
 import Paper from "@mui/material/Paper";
 import { useReactToPrint } from "react-to-print";
 import swal from "sweetalert";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardFacturas() {
   const baseUrl = "https://localhost:7151/api/facturas";
@@ -97,6 +99,14 @@ export default function DashboardFacturas() {
     peticionesGet();
   }, [startDate, endDate]);
 
+  const cookies = Cookies();
+  const navigate = useNavigate();
+  const roles = cookies.get("rol");
+  useEffect(() => {
+    if (roles === "Delivery") {
+      navigate("/DashboardPedidos");
+    }
+  }, [roles, navigate]);
   useEffect(() => {
     let total = 0;
     data.forEach((factura) => {
